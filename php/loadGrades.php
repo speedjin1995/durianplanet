@@ -14,21 +14,21 @@ $searchValue = mysqli_real_escape_string($db,$_POST['search']['value']); // Sear
 ## Search 
 $searchQuery = " ";
 if($searchValue != ''){
-  $searchQuery = " AND (grades like '%".$searchValue."%')";
+  $searchQuery = " AND (item_name like '%".$searchValue."%')";
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($db,"select count(*) as allcount from grades");
+$sel = mysqli_query($db,"select count(*) as allcount from items");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of record with filtering
-$sel = mysqli_query($db,"select count(*) as allcount from grades WHERE deleted = '0'".$searchQuery);
+$sel = mysqli_query($db,"select count(*) as allcount from items WHERE item_status = '0'".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$empQuery = "select * from grades WHERE deleted = '0'".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+$empQuery = "select * from items WHERE item_status = '0'".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
 $data = array();
 $counter = 1;
@@ -37,9 +37,8 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     $data[] = array( 
       "counter"=>$counter,
       "id"=>$row['id'],
-      "class"=>$row['class'],
-      "market"=>$row['market'],
-      "grade"=>$row['grade']
+      "item_name"=>$row['item_name'],
+      "item_price"=>$row['item_price']
     );
 
     $counter++;

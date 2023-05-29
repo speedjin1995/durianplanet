@@ -14,21 +14,21 @@ $searchValue = mysqli_real_escape_string($db,$_POST['search']['value']); // Sear
 ## Search 
 $searchQuery = " ";
 if($searchValue != ''){
-   $searchQuery = " AND reasons like '%".$searchValue."%'";
+   $searchQuery = " AND packing_name like '%".$searchValue."%'";
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($db,"select count(*) as allcount from reasons");
+$sel = mysqli_query($db,"select count(*) as allcount from packing");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of record with filtering
-$sel = mysqli_query($db,"select count(*) as allcount from reasons WHERE deleted = '0'".$searchQuery);
+$sel = mysqli_query($db,"select count(*) as allcount from packing WHERE packing_status = '0'".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$empQuery = "select * from reasons WHERE deleted = '0'".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+$empQuery = "select * from packing WHERE packing_status = '0'".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
 $data = array();
 $counter = 1;
@@ -37,8 +37,7 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     $data[] = array( 
       "counter"=>$counter,
       "id"=>$row['id'],
-      "itemType"=>$row['class'],
-      "reasons"=>$row['reasons']
+      "packing_name"=>$row['packing_name']
     );
 
     $counter++;

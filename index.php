@@ -35,7 +35,7 @@ else{
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-  <title>Tian Ma - Auto Weighing System </title>
+  <title>Durian Planet - POS </title>
 
   <link rel="icon" href="assets/logo.png" type="image">
   <!-- Font Awesome Icons -->
@@ -302,7 +302,7 @@ to get the desired effect
 |               | sidebar-mini                            |
 |---------------------------------------------------------|
 -->
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini sidebar-collapse">
 <div class="loading" id="spinnerLoading">
   <div class='uil-ring-css' style='transform:scale(0.79);'>
     <div></div>
@@ -345,56 +345,46 @@ to get the desired effect
         <ul class="nav nav-pills nav-sidebar flex-column" id="sideMenu" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
             with font-awesome or any other icon font library -->
-          <?php 
-            if($role == "NORMAL" || $role == "ADMIN"){
-              echo '<li class="nav-item has-treeview menu-open">
-                  <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-tachometer-alt"></i>
-                    <p>Weighing 称重<i class="fas fa-angle-left right"></i></p>
-                  </a>
-                  <ul class="nav nav-treeview" style="display: block;">
-                    <li class="nav-item">
-                      <a href="#receive" data-file="receive.php" class="nav-link link">
-                        <i class="nav-icon fas fa-chart-pie"></i>
-                        <p>Receive 验收</p>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a href="#wgrade" data-file="wgrade.php" class="nav-link link">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Grade 分级</p>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a href="#wMoisturise" data-file="wMoisturise.php" class="nav-link link">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Moisturise/Drying <span class="tab-label">风干/加湿</span> </p>
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="nav-item has-treeview">
-                  <a href="#" class="nav-link">
-                    <i class="nav-icon fa fa-file"></i>
-                    <p>Report 报告<i class="fas fa-angle-left right"></i></p>
-                  </a>
-                  <ul class="nav nav-treeview" style="display: none;">
-                    <li class="nav-item">
-                      <a href="#summary" data-file="summary.php" class="nav-link link">
-                        <i class="nav-icon fa fa-file"></i>
-                        <p>Summary Report <span class="tab-label">总结报告</span></p>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a href="#batch" data-file="batch.php" class="nav-link link">
-                        <i class="nav-icon fa fa-file"></i>
-                        <p>Batch Report 批次报告</p>
-                      </a>
-                    </li>
-                  </ul>
-                </li>';
-            }
-          ?>
+          <li class="nav-item has-treeview menu-open">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Sales 销售<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" style="display: block;">
+              <li class="nav-item">
+                <a href="#sales" data-file="sales.php" class="nav-link link">
+                  <i class="nav-icon fas fa-chart-pie"></i>
+                  <p>Sales 销售</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#salesreport" data-file="salesreport.php" class="nav-link link">
+                  <i class="nav-icon fas fa-tachometer-alt"></i>
+                  <p>Sales Report 销售报告</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fa fa-file"></i>
+              <p>Inventory 库存<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" style="display: none;">
+              <li class="nav-item">
+                <a href="#inventory" data-file="inventory.php" class="nav-link link">
+                  <i class="nav-icon fa fa-file"></i>
+                  <p>Inventory 库存</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#purchase" data-file="purchase.php" class="nav-link link">
+                  <i class="nav-icon fa fa-file"></i>
+                  <p>Purchase 采购</p>
+                </a>
+              </li>
+            </ul>
+          </li>
           <?php 
             if($role == "ADMIN"){
               echo '<li class="nav-item">
@@ -410,25 +400,25 @@ to get the desired effect
                 </a>
                 <ul class="nav nav-treeview" style="display: none;">
                   <li class="nav-item">
-                    <a href="#grades" data-file="grades.php" class="nav-link link">
+                    <a href="#packing" data-file="packing.php" class="nav-link link">
                       <i class="nav-icon fas fa-store"></i>
-                      <p>Grade 品规</p>
+                      <p>Packing 包装</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="#reasons" data-file="reasons.php" class="nav-link link">
+                    <a href="#products" data-file="products.php" class="nav-link link">
                       <i class="nav-icon fas fa-weight"></i>
-                      <p>Reasons 理由</p>
+                      <p>Products 产品</p>
                     </a>
                   </li>            
                 </ul>
-              </li>
-              <li class="nav-item">
-                <a href="#log" data-file="log.php" class="nav-link link">
-                  <i class="nav-icon fas fa-weight"></i>
-                  <p>Log 日志</p>
-                </a>
-              </li> ';
+              </li>';
+              //<li class="nav-item">
+                //<a href="#log" data-file="log.php" class="nav-link link">
+                  //<i class="nav-icon fas fa-weight"></i>
+                  //<p>Log 日志</p>
+                //</a>
+              //</li> ';
             }
           ?>
           <?php 
@@ -623,7 +613,7 @@ $(function () {
       });
   });
   
-  $("a[href='#receive']").click();
+  $("a[href='#sales']").click();
 });
 </script>
 </body>

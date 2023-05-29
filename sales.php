@@ -14,12 +14,12 @@ else{
     $stmt->execute();
     $result = $stmt->get_result();
     $role = 'NORMAL';
-
 	
     if(($row = $result->fetch_assoc()) !== null){
      $role = $row['role_code'];
     }
 
+    $products = $db->query("SELECT * FROM items WHERE item_status = '0'");
 }
 ?>
 
@@ -59,7 +59,7 @@ else{
     <div class="container-fluid">
         <div class="row mb-2">
 			<div class="col-sm-6">
-				<h1 class="m-0 text-dark">Receive 验收</h1>
+				<h1 class="m-0 text-dark">Sales 销售</h1>
 			</div><!-- /.col -->
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -70,74 +70,64 @@ else{
 <section class="content">
 	<div class="container-fluid">
         <div class="row">
-			<div class="col-12">
+            <div class="col-8">
+                <div class="row">
+                    <?php while($rowProducts=mysqli_fetch_assoc($products)){ ?>
+                        <div class="col-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <label><?=$rowProducts['item_name'] ?> </label>
+                                </div>
+                                <div class="card-body">
+                                    <img src="assets/durian.jpeg" width="100%s"/>
+                                </div><!-- /.card-body -->
+                            </div><!-- /.card -->
+                        </div>
+                    <?php } ?>
+                </div>
+            </div>
+			<div class="col-4">
 				<div class="card">
 					<div class="card-header">
-                        <div class="row">
-                            <div class="col-6"></div>
-                            <!--div class="col-3">
-                                <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="excelSearch"><i class="fas fa-file-excel"></i>Export Excel</button>
-                            </div-->
-                            <div class="col-3">
-                                <button type="button" class="btn btn-block bg-gradient-info btn-sm" id="scanReceives">Scan 扫描</button>
-                            </div>
-                            <div class="col-3">
-                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addReceive">Add Receive 新增验收</button>
-                            </div>
-                        </div>
+                        <label>Your Orders </label>
                     </div>
 					<div class="card-body">
-                        <div class="row">
-                            <div class="form-group col-3">
-                                <label>From Date 开始日期</label>
-                                <div class="input-group date" id="fromDatePicker" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input" data-target="#fromDatePicker" id="fromDate" name="fromDate" required/>
-                                    <div class="input-group-append" data-target="#fromDatePicker" data-toggle="datetimepicker">
-                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div></div>
-                                </div>
-                            </div>
-
-                            <div class="form-group col-3">
-                                <label>To Date 结束日期</label>
-                                <div class="input-group date" id="toDatePicker" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input" data-target="#toDatePicker" id="toDate" name="toDate" required/>
-                                    <div class="input-group-append" data-target="#toDatePicker" data-toggle="datetimepicker">
-                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group col-md-3">
-                                <div class="form-group">
-                                <label for="itemTypeFilter">Item Types 货品种类</label>
-                                    <select class="form-control" style="width: 100%;" id="itemTypeFilter" name="itemTypeFilter">
-                                        <option selected="selected">-</option>
-                                        <option value="T1">T1</option>
-                                        <option value="T3">T3</option>
-                                        <option value="T4">T4</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group col-md-3 mt-32">
-                                <button class="btn btn-success" id="filterSearch"><i class="fas fa-search"></i> Filter 筛选</button> 
-                            </div>                                            
-                        </div>            
-						<table id="receiveTable" class="table table-bordered table-striped">
-							<thead>
-								<tr>
-									<th>No. <br>排号</th>
-                                    <th>Item Type <br>货品种类</th>
-                                    <th>Lot No <br>批号</th>
-                                    <th>Box/Tray No <br>桶/托盘代号</th>
-									<th>Box/Tray Weight <br>桶/托盘重量(G)</th>
-                                    <th>Receive Gross weight <br>验收毛重(G)</th>
-                                    <th>Receive Net weight <br>验收净重(G)</th>
-                                    <th>Moisture Value <br>水分值</th>
-                                    <th>Updated Datetime <br>更新时间</th>
-                                    <th>Action <br>行动</th>
-								</tr>
-							</thead>
-						</table>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Items</th>
+                                    <th>Price Per Kg</th>
+                                    <th>KG</th>
+                                    <th>Price (RM)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Musang King</td>
+                                    <td>20.00</td>
+                                    <td>1.8</td>
+                                    <td>36.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Kapri</td>
+                                    <td>21.00</td>
+                                    <td>2.0</td>
+                                    <td>42.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Hu Lu</td>
+                                    <td>25.00</td>
+                                    <td>2.2</td>
+                                    <td>55.00</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3">Total Price (RM): </th>
+                                    <th>133.00</th>
+                                </tr>
+                            </tfoot>
+                        </table>
 					</div><!-- /.card-body -->
 				</div><!-- /.card -->
 			</div><!-- /.col -->
@@ -394,42 +384,6 @@ $(function () {
 
             }
     ?>
-
-
-    $("#receiveTable").DataTable({
-        "responsive": true,
-        "autoWidth": false,
-        'processing': true,
-        'serverSide': true,
-        'searching': false,
-        'serverMethod': 'post',
-        'order': [[ 2, 'asc' ]],
-        'columnDefs': [ { orderable: false, targets: [0] }],
-        'ajax': {
-            'url':'php/loadReceives.php'
-        },
-        'columns': [
-            { data: 'counter' },
-            { data: 'item_types' },
-            { data: 'lot_no' },
-            { data: 'tray_no' },
-            { data: 'tray_weight' },
-            { data: 'gross_weight' },
-            { data: 'net_weight' },
-            { data: 'moisture_after_receiving' },
-            { data: 'updated_datetime' },
-            { 
-                data: 'id',
-                render: function ( data, type, row ) {
-                    return '<div class="row"><div class="col-3"><button type="button" id="edit'+data+'" onclick="edit('+data+')" class="btn btn-success btn-sm"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" id="print'+data+'" onclick="print('+data+')" class="btn btn-info btn-sm"><i class="fas fa-print"></i></button></div><div class="col-3"><button type="button" id="deactivate'+data+'" onclick="deactivate('+data+')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></div></div>';
-                }
-            }
-        ],
-        "rowCallback": function( row, data, index ) {
-
-            $('td', row).css('background-color', '#E6E6FA');
-        },        
-    });
     
     $.validator.setDefaults({
         submitHandler: function () {

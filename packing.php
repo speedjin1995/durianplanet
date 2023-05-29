@@ -11,11 +11,12 @@ else{
   $user = $_SESSION['userID'];
 }
 ?>
+
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
 			<div class="col-sm-6">
-				<h1 class="m-0 text-dark">Grades 品规</h1>
+				<h1 class="m-0 text-dark">Packing 包装</h1>
 			</div><!-- /.col -->
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -32,17 +33,16 @@ else{
                         <div class="row">
                             <div class="col-9"></div>
                             <div class="col-3">
-                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addGrades">Add Grades 新增品规</button>
+                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addReasons">Add Packing 新增包装</button>
                             </div>
                         </div>
                     </div>
 					<div class="card-body">
-						<table id="gradeTable" class="table table-bordered table-striped">
+						<table id="reasonsTable" class="table table-bordered table-striped">
 							<thead>
 								<tr>
 									<th>No. 排号</th>
-                                    <th>Class 级别</th>
-                                    <th>Grades 品规</th>
+                                    <th>Packing Name 包装名称</th>
 									<th></th>
 								</tr>
 							</thead>
@@ -54,39 +54,26 @@ else{
 	</div><!-- /.container-fluid -->
 </section><!-- /.content -->
 
-<div class="modal fade" id="gradeModal">
+<div class="modal fade" id="reasonModal">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
-        <form role="form" id="gradeForm">
+        <form role="form" id="reasonForm">
             <div class="modal-header">
-              <h4 class="modal-title">Add Grades 新增品规</h4>
+              <h4 class="modal-title">Add Packing 新增包装</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
-              <div class="card-body">
-                <div class="form-group">
-                  <input type="hidden" class="form-control" id="id" name="id">
-                </div>
-                <div class="form-group">
-                  <label for="code">Class 级别 *</label>
-                  <select class="form-control" style="width: 100%;" id="code" name="code" required>
-                    <option selected="selected">-</option>
-                    <option value="T1">T1</option>
-                    <option value="T3">T3</option>
-                    <option value="T4">T4</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="market">Market Grade 市场规格 </label>
-                  <input type="text" class="form-control" name="market" id="market" placeholder="Enter Market" >
-                </div>
-                <div class="form-group">
-                  <label for="grades">Grade 品规 *</label>
-                  <input type="text" class="form-control" name="grades" id="grades" placeholder="Enter Grade" required>
-                </div>
-              </div>
+                <div class="card-body">
+                    <div class="form-group">
+    					<input type="hidden" class="form-control" id="id" name="id">
+    				</div>
+                    <div class="form-group">
+    					<label for="reasons">Packing Name 包装名称 *</label>
+    					<input type="text" class="form-control" name="reasons" id="reasons" placeholder="Enter Packing Name" required>
+    				</div>
+    			</div>
             </div>
             <div class="modal-footer justify-content-between">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close 关闭</button>
@@ -101,21 +88,20 @@ else{
 
 <script>
 $(function () {
-    $("#gradeTable").DataTable({
+    $("#reasonsTable").DataTable({
         "responsive": true,
         "autoWidth": false,
         'processing': true,
         'serverSide': true,
         'serverMethod': 'post',
-        'order': [[ 1, 'asc' ]],
+        'order': [[ 2, 'asc' ]],
         'columnDefs': [ { orderable: false, targets: [0] }],
         'ajax': {
-            'url':'php/loadGrades.php'
+            'url':'php/loadReasons.php'
         },
         'columns': [
             { data: 'counter' },
-            { data: 'class' },
-            { data: 'grade' },
+            { data: 'packing_name' },
             { 
                 data: 'id',
                 render: function ( data, type, row ) {
@@ -132,14 +118,14 @@ $(function () {
     $.validator.setDefaults({
         submitHandler: function () {
             $('#spinnerLoading').show();
-            $.post('php/grades.php', $('#gradeForm').serialize(), function(data){
+            $.post('php/reasons.php', $('#reasonForm').serialize(), function(data){
                 var obj = JSON.parse(data); 
                 
                 if(obj.status === 'success'){
-                    $('#gradeModal').modal('hide');
+                    $('#reasonModal').modal('hide');
                     toastr["success"](obj.message, "Success:");
                     
-                    $.get('grades.php', function(data) {
+                    $.get('packing.php', function(data) {
                         $('#mainContents').html(data);
                         $('#spinnerLoading').hide();
                     });
@@ -156,14 +142,12 @@ $(function () {
         }
     });
 
-    $('#addGrades').on('click', function(){
-        $('#gradeModal').find('#id').val("");
-        $('#gradeModal').find('#code').val("");
-        $('#gradeModal').find('#market').val("");
-        $('#gradeModal').find('#grades').val("");
-        $('#gradeModal').modal('show');
+    $('#addReasons').on('click', function(){
+        $('#reasonModal').find('#id').val("");
+        $('#reasonModal').find('#reasons').val("");
+        $('#reasonModal').modal('show');
         
-        $('#gradeForm').validate({
+        $('#reasonForm').validate({
             errorElement: 'span',
             errorPlacement: function (error, element) {
                 error.addClass('invalid-feedback');
@@ -181,17 +165,15 @@ $(function () {
 
 function edit(id){
     $('#spinnerLoading').show();
-    $.post('php/getGrades.php', {userID: id}, function(data){
+    $.post('php/getReasons.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
-            $('#gradeModal').find('#id').val(obj.message.id);
-            $('#gradeModal').find('#code').val(obj.message.class);
-            $('#gradeModal').find('#market').val(obj.message.market);
-            $('#gradeModal').find('#grades').val(obj.message.grade);
-            $('#gradeModal').modal('show');
+            $('#reasonModal').find('#id').val(obj.message.id);
+            $('#reasonModal').find('#reasons').val(obj.message.reasons);
+            $('#reasonModal').modal('show');
             
-            $('#gradeForm').validate({
+            $('#reasonForm').validate({
                 errorElement: 'span',
                 errorPlacement: function (error, element) {
                     error.addClass('invalid-feedback');
@@ -217,12 +199,12 @@ function edit(id){
 
 function deactivate(id){
     $('#spinnerLoading').show();
-    $.post('php/deleteGrades.php', {userID: id}, function(data){
+    $.post('php/deleteReasons.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
             toastr["success"](obj.message, "Success:");
-            $.get('grades.php', function(data) {
+            $.get('packing.php', function(data) {
                 $('#mainContents').html(data);
                 $('#spinnerLoading').hide();
             });
