@@ -14,23 +14,21 @@ $searchValue = mysqli_real_escape_string($db,$_POST['search']['value']); // Sear
 ## Search 
 $searchQuery = " ";
 if($searchValue != ''){
-  $searchQuery = " AND tray_no like '%".$searchValue."%'";
+  $searchQuery = "WHERE batch_no like '%".$searchValue."%'";
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($db,"select count(*) as allcount from weighing WHERE parent_no <> '0'");
+$sel = mysqli_query($db,"select count(*) as allcount from purchase");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of record with filtering
-$sel = mysqli_query($db,"select count(*) as allcount from weighing, grades WHERE parent_no <> '0' AND weighing.grade=grades.id". $searchQuery);
+$sel = mysqli_query($db,"select count(*) as allcount from purchase". $searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$empQuery = "select weighing.lot_no, weighing.item_types, grades.grade, weighing.tray_no, weighing.tray_weight, weighing.grading_gross_weight, 
-weighing.pieces, weighing.grading_net_weight, weighing.id, weighing.moisture_after_grading, weighing.status from weighing, grades WHERE 
-parent_no <> '0' AND weighing.grade=grades.id".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+$empQuery = "select * from purchase ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
 $data = array();
 $counter = 1;
@@ -38,18 +36,10 @@ $counter = 1;
 while($row = mysqli_fetch_assoc($empRecords)) {
   $data[] = array( 
     "counter"=>$counter,
-    "lot_no"=>$row['lot_no'],
-    "item_types"=>$row['item_types'],
-    "grade"=>$row['grade'],
-    "tray_no"=>$row['tray_no'],
-    "tray_weight"=>$row['tray_weight'],
-    "grading_gross_weight"=>$row['grading_gross_weight'],
-    "pieces"=>$row['pieces'],
-    "grading_net_weight"=>$row['grading_net_weight'],
     "id"=>$row['id'],
-    "moisture_after_grading"=>$row['moisture_after_grading'],
-    "status"=>$row['status'],
-    "updated_datetime"=>$row['updated_datetime']
+    "batch_no"=>$row['batch_no'],
+    "total_price"=>$row['total_price'],
+    "created_datetime"=>$row['created_datetime']
   );
 
   $counter++;
@@ -60,7 +50,8 @@ $response = array(
   "draw" => intval($draw),
   "iTotalRecords" => $totalRecords,
   "iTotalDisplayRecords" => $totalRecordwithFilter,
-  "aaData" => $data
+  "aaData" => $data,
+  "query" => $empQuery
 );
 
 echo json_encode($response);

@@ -73,13 +73,13 @@ else{
             <div class="col-8">
                 <div class="row">
                     <?php while($rowProducts=mysqli_fetch_assoc($products)){ ?>
-                        <div class="col-4">
-                            <div class="card">
+                        <div class="col-3">
+                            <div class="card" id="items<?=$rowProducts['id'] ?>" onclick="addItems('<?=$rowProducts['id'] ?>')">
                                 <div class="card-header">
                                     <label><?=$rowProducts['item_name'] ?> </label>
                                 </div>
                                 <div class="card-body">
-                                    <img src="assets/durian.jpeg" width="100%s"/>
+                                    <img src="assets/durian.jpeg" width="100%"/>
                                 </div><!-- /.card-body -->
                             </div><!-- /.card -->
                         </div>
@@ -101,30 +101,18 @@ else{
                                     <th>Price (RM)</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Musang King</td>
-                                    <td>20.00</td>
-                                    <td>1.8</td>
-                                    <td>36.00</td>
-                                </tr>
-                                <tr>
-                                    <td>Kapri</td>
-                                    <td>21.00</td>
-                                    <td>2.0</td>
-                                    <td>42.00</td>
-                                </tr>
-                                <tr>
-                                    <td>Hu Lu</td>
-                                    <td>25.00</td>
-                                    <td>2.2</td>
-                                    <td>55.00</td>
-                                </tr>
+                            <tbody id="duriansTable">
+
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="3">Total Price (RM): </th>
-                                    <th>133.00</th>
+                                    <th colspan="2"></th>
+                                    <th>Total Price (RM): </th>
+                                    <th>
+                                        <div class="form-group">
+                                            <input type="number" class="form-control" name="totalPricing" id="totalPricing" step="0.01" placeholder="Enter Total Price" value="0.00" readonly>
+                                        </div>
+                                    </th>
                                 </tr>
                             </tfoot>
                         </table>

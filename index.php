@@ -353,37 +353,29 @@ to get the desired effect
             <ul class="nav nav-treeview" style="display: block;">
               <li class="nav-item">
                 <a href="#sales" data-file="sales.php" class="nav-link link">
-                  <i class="nav-icon fas fa-chart-pie"></i>
+                  <i class="nav-icon fa fa-dollar-sign"></i>
                   <p>Sales 销售</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="#salesreport" data-file="salesreport.php" class="nav-link link">
-                  <i class="nav-icon fas fa-tachometer-alt"></i>
+                  <i class="nav-icon fas fa-file"></i>
                   <p>Sales Report 销售报告</p>
                 </a>
               </li>
             </ul>
           </li>
-          <li class="nav-item has-treeview">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fa fa-file"></i>
-              <p>Inventory 库存<i class="fas fa-angle-left right"></i></p>
+          <li class="nav-item">
+            <a href="#inventory" data-file="inventory.php" class="nav-link link">
+              <i class="nav-icon fa fa-store"></i>
+              <p>Inventory 库存</p>
             </a>
-            <ul class="nav nav-treeview" style="display: none;">
-              <li class="nav-item">
-                <a href="#inventory" data-file="inventory.php" class="nav-link link">
-                  <i class="nav-icon fa fa-file"></i>
-                  <p>Inventory 库存</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#purchase" data-file="purchase.php" class="nav-link link">
-                  <i class="nav-icon fa fa-file"></i>
-                  <p>Purchase 采购</p>
-                </a>
-              </li>
-            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="#purchase" data-file="purchase.php" class="nav-link link">
+              <i class="nav-icon fa fa-shopping-cart"></i>
+              <p>Purchase 采购</p>
+            </a>
           </li>
           <?php 
             if($role == "ADMIN"){

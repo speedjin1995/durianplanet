@@ -75,7 +75,7 @@ else{
                 </div>
                 <div class="form-group">
                   <label for="grades">Product Price 产品价格 *</label>
-                  <input type="number" class="form-control" name="grades" id="grades" step="0.10" placeholder="Enter Product Price" onchange="setTwoNumberDecimal" required>
+                  <input type="number" class="form-control" name="grades" id="grades" step="0.01" placeholder="Enter Product Price" onchange="setTwoNumberDecimal" required>
                 </div>
               </div>
             </div>
