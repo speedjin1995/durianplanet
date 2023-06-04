@@ -88,7 +88,7 @@ else{
                 </div>
             </div>
 			<div class="col-5">
-                <form role="form" id="saleForm">
+                <form role="form" id="saleForm" method="post" action="php/receive.php">
                     <div class="card">
                         <div class="card-header">
                             <label>Your Orders </label>
@@ -134,10 +134,10 @@ else{
                                         </th>
                                     </tr>
                                 </tfoot>
-                            </table>
+                            </table><br>
                             <div class="row col-12">
                                 <div class="form-group">
-                                    <label for="itemType">Payment Methods 货品种类 *</label>
+                                    <label for="itemType">Payment Methods 付款方式 *</label>
                                     <select class="form-control" style="width: 100%;" id="paymentMethod" name="paymentMethod" required>
                                         <option value="" selected disabled hidden>Please Select</option>
                                         <option value="e-wallet">e-wallet</option>
@@ -277,6 +277,20 @@ $(function () {
 
             }
     ?>
+
+    $('#saleForm').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+            error.addClass('invalid-feedback');
+            element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+            $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $(element).removeClass('is-invalid');
+        }
+    });
     
     $.validator.setDefaults({
         submitHandler: function () {
@@ -285,8 +299,7 @@ $(function () {
                 var editId = $('#editModal').find('#editId').val();
                 var editPrice = $('#editModal').find('#editPrice').val();
                 var editWeight = $('#editModal').find('#editWeight').val();
-                debugger;
-                var totalPrice = parseFloat(parseFloat(editPrice) * parseFloat(editPrice)).toFixed(2);
+                var totalPrice = parseFloat(parseFloat(editPrice) * parseFloat(editWeight)).toFixed(2);
                 var subTotalPrice = parseFloat($('#subTotalPricing').val());
                 subTotalPrice = parseFloat(parseFloat(subTotalPrice) + parseFloat(totalPrice)).toFixed(2);
                 var totalDiscount = parseFloat($('#totalDiscount').val());
@@ -311,6 +324,7 @@ $(function () {
                 $('#totalPricing').val(totalPricing);
             }
             else{
+                debugger;
                 $.post('php/receive.php', $('#saleForm').serialize(), function(data){
                     var obj = JSON.parse(data); 
                     
@@ -387,293 +401,22 @@ $(function () {
         $(this).parents("tr").remove();
     });
 
-    $('#addReceive').on('click', function(){
-        $('#receiveModal').find('#id').val("");
-        $('#receiveModal').find('#itemType').val('-');
-        $('#receiveModal').find('#grossWeight').val("");
-        $('#receiveModal').find('#lotNo').val("");
-        $('#receiveModal').find('#bTrayWeight').val("");
-        $('#receiveModal').find('#bTrayNo').val("");
-        $('#receiveModal').find('#netWeight').val("");
-        $('#receiveModal').modal('show');
-        
-        $("#TableId tbody").empty();
-
-        $('#receiveForm').validate({
-            errorElement: 'span',
-            errorPlacement: function (error, element) {
-                error.addClass('invalid-feedback');
-                element.closest('.form-group').append(error);
-            },
-            highlight: function (element, errorClass, validClass) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function (element, errorClass, validClass) {
-                $(element).removeClass('is-invalid');
-            }
-        });
-    });
-
-    $('#receiveModal').find('#grossWeight').on('change', function(){
-        var grossWeight = $(this).val();
-        var bTrayNo = 0;
-
-        if($('#receiveModal').find('#bTrayWeight').val()){
-            bTrayNo = $('#receiveModal').find('#bTrayWeight').val();
-            var netweight = grossWeight - bTrayNo;
-            $('#receiveModal').find('#netWeight').val(netweight.toFixed(2));
-
-        }
-        else{
-            $('#receiveModal').find('#netWeight').val(grossWeight.toFixed(2));
-        }
-    });
-
-    $('#receiveModal').find('#bTrayWeight').on('change', function(){
-        var grossWeight = 0;
-        var bTrayNo = $(this).val();
-
-        if($('#receiveModal').find('#grossWeight').val()){
-            grossWeight = $('#receiveModal').find('#grossWeight').val();
-            var netweight = grossWeight - bTrayNo;
-            $('#receiveModal').find('#netWeight').val(netweight.toFixed(2));
-        }
-        else{
-            $('#receiveModal').find('#netWeight').val((0).toFixed(2));
-        }
-    });
-
-    $('#editModal').find('#grossWeight').on('change', function(){
-        var grossWeight = $(this).val();
-        var bTrayNo = 0;
-
-        if($('#editModal').find('#bTrayWeight').val()){
-            bTrayNo = $('#editModal').find('#bTrayWeight').val();
-            var netweight = grossWeight - bTrayNo;
-            $('#editModal').find('#netWeight').val(netweight.toFixed(2));
-        }
-        else{
-            $('#editModal').find('#netWeight').val(grossWeight.toFixed(2));
-        }
-    });
-
-    $('#editModal').find('#bTrayWeight').on('change', function(){
-        var grossWeight = 0;
-        var bTrayNo = $(this).val();
-
-        if($('#editModal').find('#grossWeight').val()){
-            grossWeight = $('#editModal').find('#grossWeight').val();
-            var netweight = grossWeight - bTrayNo;
-            $('#editModal').find('#netWeight').val(netweight.toFixed(2));
-        }
-        else{
-            $('#editModal').find('#netWeight').val((0).toFixed(2));
-        }
-    });
-
-    $('#itemType').on('change', function(){
-        var itemType = $(this).val();
-
-        if(itemType == 'T3' || itemType == 'T1'){
-            $("#bTrayWeight").removeAttr("required");
-            $("#bTrayNo").removeAttr("required");
-        }
-        else{
-            //$("#bTrayWeight").attr("required","required");
-            //$("#bTrayNo").attr("required","required");
-        }
-    });
-
-    $('#lotNo').on('change', function(){
-        var size = $("#TableId").find("tr").length;
-        $("#bTrayNo").val($('#lotNo').val() + padLeadingZeros((size).toString(), 3));
-    });
-    
-    $('#filterSearch').on('click', function(){
-        $('#spinnerLoading').show();
-
-        var fromDateValue = '';
-        var toDateValue = '';
-
-        if($('#fromDate').val()){
-        var convert1 = $('#fromDate').val().replace(", ", " ");
-        convert1 = convert1.replace(":", "/");
-        convert1 = convert1.replace(":", "/");
-        convert1 = convert1.replace(" ", "/");
-        convert1 = convert1.replace(" pm", "");
-        convert1 = convert1.replace(" am", "");
-        convert1 = convert1.replace(" PM", "");
-        convert1 = convert1.replace(" AM", "");
-        var convert2 = convert1.split("/");
-        var date  = new Date(convert2[2], convert2[1] - 1, convert2[0], convert2[3], convert2[4], convert2[5]);
-        fromDateValue = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-        }
-        
-        if($('#toDate').val()){
-        var convert3 = $('#toDate').val().replace(", ", " ");
-        convert3 = convert3.replace(":", "/");
-        convert3 = convert3.replace(":", "/");
-        convert3 = convert3.replace(" ", "/");
-        convert3 = convert3.replace(" pm", "");
-        convert3 = convert3.replace(" am", "");
-        convert3 = convert3.replace(" PM", "");
-        convert3 = convert3.replace(" AM", "");
-        var convert4 = convert3.split("/");
-        var date2  = new Date(convert4[2], convert4[1] - 1, convert4[0], convert4[3], convert4[4], convert4[5]);
-        toDateValue = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate() + " " + date2.getHours() + ":" + date2.getMinutes() + ":" + date2.getSeconds();
-        }
-
-        var itemTypeFilter = $('#itemTypeFilter').val() ? $('#itemTypeFilter').val() : '';
-
-
-        //Destroy the old Datatable
-        $("#receiveTable").DataTable().clear().destroy();
-
-        //Create new Datatable
-        table = $("#receiveTable").DataTable({
-        "responsive": true,
-        "autoWidth": false,
-        'processing': true,
-        'serverSide': true,
-        'serverMethod': 'post',
-        'searching': false,
-        'order': [[ 2, 'asc' ]],
-        'columnDefs': [ { orderable: false, targets: [0] }],
-        'ajax': {
-            'type': 'POST',
-            'url':'php/filterReceive.php',
-            'data': {
-                fromDate: fromDateValue,
-                toDate: toDateValue,
-                itemTypeFilter: itemTypeFilter,
-            } 
-        },
-        'columns': [
-        { data: 'counter' },
-        { data: 'item_types' },
-        { data: 'lot_no' },
-        { data: 'tray_no' },
-        { data: 'tray_weight' },
-        { data: 'gross_weight' },
-        { data: 'net_weight' },
-        { data: 'moisture_after_receiving' },
-        { data: 'updated_datetime' },
-        { 
-            data: 'id',
-            render: function ( data, type, row ) {
-                return '<div class="row"><div class="col-3"><button type="button" id="edit'+data+'" onclick="edit('+data+')" class="btn btn-success btn-sm"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" id="print'+data+'" onclick="print('+data+')" class="btn btn-info btn-sm"><i class="fas fa-print"></i></button></div><div class="col-3"><button type="button" id="deactivate'+data+'" onclick="deactivate('+data+')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></div></div>';
-            }
-        }
-        ],
-        "rowCallback": function( row, data, index ) {
-            $('td', row).css('background-color', '#E6E6FA');
-        }
-
-        });
-
-        $('#spinnerLoading').hide();
-    });
-
-    $('#grossWeightSyncBtn').on('click', function(){
-        $.post('http://127.0.0.1:5002/handshaking', function(data){
-            if(data != "Error"){
-                console.log("Data Received:" + data);
-                var temp = data.replace('S', '').replace('D', '').replace('+', '').replace('-', '').replace('g', '').replace('G', '').trim();
-                var str = temp.split(".");
-                var arr=[];
-                
-                for(var i=0; i<str[0].length; i++){
-                    if(str[0].charAt(i).match(re3)){
-                        arr.push(str[0][i]);
-                    }
-                }
-                
-                var text = arr.join("") + "." + str[1];
-                $('#receiveModal').find('#grossWeight').val(parseFloat(text).toFixed(2));
-                $('#receiveModal').find('#grossWeight').trigger('change');
-            }
-            else{
-                toastr["error"]("Failed to get the reading!", "Failed:");
-            }
-        });
-    });
-
-    $('#trayWeightSyncBtn').on('click', function(){
-        $.post('http://127.0.0.1:5002/handshaking', function(data){
-            if(data != "Error"){
-                console.log("Data Received:" + data);
-                var temp = data.replace('S', '').replace('D', '').replace('+', '').replace('-', '').replace('g', '').replace('G', '').trim();
-                var str = temp.split(".");
-                var arr=[];
-                
-                for(var i=0; i<str[0].length; i++){
-                    if(str[0].charAt(i).match(re3)){
-                        arr.push(str[0][i]);
-                    }
-                }
-                
-                var text = arr.join("") + "." + str[1];
-                $('#receiveModal').find('#bTrayWeight').val(parseFloat(text).toFixed(2));
-                $('#receiveModal').find('#bTrayWeight').trigger('change');
-            }
-            else{
-                toastr["error"]("Failed to get the reading!", "Failed:");
-            }
-        });
-    });
-
-    $('#editTrayWeightBtn').on('click', function(){
-        $.post('http://127.0.0.1:5002/handshaking', function(data){
-            if(data != "Error"){
-                console.log("Data Received:" + data);
-                var temp = data.replace('S', '').replace('D', '').replace('+', '').replace('-', '').replace('g', '').replace('G', '').trim();
-                var str = temp.split(".");
-                var arr=[];
-                
-                for(var i=0; i<str[0].length; i++){
-                    if(str[0].charAt(i).match(re3)){
-                        arr.push(str[0][i]);
-                    }
-                }
-                
-                var text = arr.join("") + "." + str[1];
-                $('#editModal').find('#bTrayWeight').val(parseFloat(text).toFixed(2));
-                $('#editModal').find('#bTrayWeight').trigger('change');
-            }
-            else{
-                toastr["error"]("Failed to get the reading!", "Failed:");
-            }
-        });
-    });
-
-    $('#editGrossWeightBtn').on('click', function(){
-        $.post('http://127.0.0.1:5002/handshaking', function(data){
-            if(data != "Error"){
-                console.log("Data Received:" + data);
-                var temp = data.replace('S', '').replace('D', '').replace('+', '').replace('-', '').replace('g', '').replace('G', '').trim();
-                var str = temp.split(".");
-                var arr=[];
-                
-                for(var i=0; i<str[0].length; i++){
-                    if(str[0].charAt(i).match(re3)){
-                        arr.push(str[0][i]);
-                    }
-                }
-                
-                var text = arr.join("") + "." + str[1];
-                $('#editModal').find('#grossWeight').val(parseFloat(text).toFixed(2));
-                $('#editModal').find('#grossWeight').trigger('change');
-            }
-            else{
-                toastr["error"]("Failed to get the reading!", "Failed:");
-            }
-        });
-    });
-
     $('#cancelSales').on('click', function(){
         $.get('sales.php', function(data) {
             $('#mainContents').html(data);
         });
+    });
+
+    $('#totalDiscount').on('change', function(){
+        if($('#subTotalPricing').val()){
+            var subTotalPrice = parseFloat($('#subTotalPricing').val());
+            var totalDiscount = parseFloat($(this).val());
+            var totalPricing = parseFloat(parseFloat(subTotalPrice) - parseFloat(totalDiscount)).toFixed(2);
+            $('#totalPricing').val(totalPricing);
+        }
+        else{
+            $('#totalPricing').val(0.00);
+        }
     });
 });
 

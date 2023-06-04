@@ -68,6 +68,42 @@ else{
       background: #eee;
       font-family: Assistant, sans-serif
     }
+
+    #image-preview {
+      width: 400px;
+      height: 400px;
+      position: relative;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #ecf0f1;
+    }
+
+    #image-preview input {
+      line-height: 200px;
+      font-size: 200px;
+      position: absolute;
+      opacity: 0;
+      z-index: 10;
+    }
+
+    #image-preview label {
+      position: absolute;
+      z-index: 5;
+      opacity: 0.8;
+      cursor: pointer;
+      background-color: #bdc3c7;
+      width: 200px;
+      height: 50px;
+      font-size: 20px;
+      line-height: 50px;
+      text-transform: uppercase;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      text-align: center;
+    }
   
     .cell-1 {
       border-collapse: separate;
@@ -323,7 +359,7 @@ to get the desired effect
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="#" class="brand-link logo-switch">
-      <img src="assets/home_logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xl">
+      <img src="assets/logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xl">
       <img src="assets/logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xs">
     </a>
 
@@ -377,6 +413,12 @@ to get the desired effect
               <p>Purchase 采购</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="#repacking" data-file="repacking.php" class="nav-link link">
+              <i class="nav-icon fa fa-box"></i>
+              <p>Repacking 重新包装</p>
+            </a>
+          </li>
           <?php 
             if($role == "ADMIN"){
               echo '<li class="nav-item">
@@ -393,7 +435,7 @@ to get the desired effect
                 <ul class="nav nav-treeview" style="display: none;">
                   <li class="nav-item">
                     <a href="#packing" data-file="packing.php" class="nav-link link">
-                      <i class="nav-icon fas fa-store"></i>
+                      <i class="nav-icon fas fa-boxes"></i>
                       <p>Packing 包装</p>
                     </a>
                   </li>
@@ -554,6 +596,7 @@ to get the desired effect
 <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
 <script src="plugins/chart.js/Chart.min.js"></script>
 <script src="plugins/daterangepicker/daterangepicker.js"></script>
+<script src="plugins/image-preview/jquery.uploadPreview.min.js"></script>
 
 <script>
 $(function () {
@@ -574,6 +617,15 @@ $(function () {
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
   }
+
+  $.uploadPreview({
+    input_field: "#image-upload",   // Default: .image-upload
+    preview_box: "#image-preview",  // Default: .image-preview
+    label_field: "#image-label",    // Default: .image-label
+    label_default: "Choose Image",   // Default: Choose File
+    label_selected: "Change Image",  // Default: Change File
+    no_label: false                 // Default: false
+  });
 
   $.post('http://127.0.0.1:5002/', $('#setupForm').serialize(), function(data){
     if(data == "false"){

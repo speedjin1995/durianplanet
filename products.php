@@ -70,6 +70,10 @@ else{
                   <input type="hidden" class="form-control" id="id" name="id">
                 </div>
                 <div class="form-group">
+                    <label for="fileToUpload">Image</label>
+                    <input type="file" name="image-upload" id="image-upload" />
+                </div>
+                <div class="form-group">
                   <label for="market">Product Name 产品名称 *</label>
                   <input type="text" class="form-control" name="code" id="code" placeholder="Enter Product Name" required>
                 </div>

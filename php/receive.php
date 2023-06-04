@@ -130,12 +130,14 @@ if(isset($_POST['paymentMethod'], $_POST['items'], $_POST['itemPrice'], $_POST['
                             $insert_stmt2->close();
                             $db->close();
 
-                            echo json_encode(
+                            /*echo json_encode(
                                 array(
                                     "status"=> "success", 
                                     "message"=> "Added Successfully!!"
                                 )
-                            );
+                            );*/
+                            echo '<script type="text/javascript">';
+		                    echo 'window.location.href = "../index.php";</script>';
                         }
                         else{
                             $insert_stmt2->close();
