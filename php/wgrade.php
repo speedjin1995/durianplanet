@@ -78,7 +78,7 @@ if(isset($_POST['items'], $_POST['itemWeight'], $_POST['itemPrice'], $_POST['tot
             else{
                 $result = $select_stmt->get_result();
                 $count = 1;
-                $firstChar = date("Ymd");
+                $firstChar = 'P'.date("Ymd");
                 
                 if ($row = $result->fetch_assoc()) {
                     $count = (int)$row['COUNT(*)'] + 1;

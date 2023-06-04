@@ -88,38 +88,70 @@ else{
                 </div>
             </div>
 			<div class="col-5">
-				<div class="card">
-					<div class="card-header">
-                        <label>Your Orders </label>
-                    </div>
-					<div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Items</th>
-                                    <th>Price Per Kg</th>
-                                    <th>KG</th>
-                                    <th>Price (RM)</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="TableId">
-
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="2"></th>
-                                    <th>Total Price (RM): </th>
-                                    <th>
-                                        <div class="form-group">
-                                            <input type="number" class="form-control" name="totalPricing" id="totalPricing" step="0.01" placeholder="Enter Total Price" value="0.00" readonly>
-                                        </div>
-                                    </th>
-                                </tr>
-                            </tfoot>
-                        </table>
-					</div><!-- /.card-body -->
-				</div><!-- /.card -->
+                <form role="form" id="saleForm">
+                    <div class="card">
+                        <div class="card-header">
+                            <label>Your Orders </label>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Items</th>
+                                        <th>Price Per Kg</th>
+                                        <th>KG</th>
+                                        <th>Price (RM)</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="TableId"></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2"></th>
+                                        <th>Sub Total Price (RM): </th>
+                                        <th>
+                                            <div class="form-group">
+                                                <input type="number" class="form-control" name="subTotalPricing" id="subTotalPricing" step="0.01" placeholder="Enter Sub Total Price" value="0.00" readonly>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2"></th>
+                                        <th>Discount (RM): </th>
+                                        <th>
+                                            <div class="form-group">
+                                                <input type="number" class="form-control" name="totalDiscount" id="totalDiscount" step="0.01" placeholder="Enter Discount Value" value="0.00">
+                                            </div>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2"></th>
+                                        <th>Total Price (RM): </th>
+                                        <th>
+                                            <div class="form-group">
+                                                <input type="number" class="form-control" name="totalPricing" id="totalPricing" step="0.01" placeholder="Enter Total Price" value="0.00" readonly>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <div class="row col-12">
+                                <div class="form-group">
+                                    <label for="itemType">Payment Methods 货品种类 *</label>
+                                    <select class="form-control" style="width: 100%;" id="paymentMethod" name="paymentMethod" required>
+                                        <option value="" selected disabled hidden>Please Select</option>
+                                        <option value="e-wallet">e-wallet</option>
+                                        <option value="cash">cash</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div><!-- /.card-body -->
+                        <div class="card-foot">
+                            <button type="button" class="btn btn-danger" id="cancelSales">Cancel 取消</button>
+                            <button type="submit" class="btn btn-primary" name="submitsales" id="submitSales">Submit 提交</button>
+                        </div><!-- /.card-foot -->
+                    </div><!-- /.card -->
+                </form>
 			</div><!-- /.col -->
 		</div><!-- /.row -->
 	</div><!-- /.container-fluid -->
@@ -248,44 +280,17 @@ $(function () {
     
     $.validator.setDefaults({
         submitHandler: function () {
-            if($('#receiveModal').hasClass('show')){
-                $('#spinnerLoading').show();
-                $.post('php/receive.php', $('#receiveForm').serialize(), function(data){
-                    var obj = JSON.parse(data); 
-                    
-                    if(obj.status === 'success'){
-                        $('#receiveModal').modal('hide');
-                        toastr["success"](obj.message, "Success:");
-
-                        var printWindow = window.open('', '', 'height=400,width=800');
-                        printWindow.document.write(obj.label);
-                        printWindow.document.close();
-                        setTimeout(function(){
-                            printWindow.print();
-                            printWindow.close();
-                        }, 1000);
-                        
-                        $.get('receive.php', function(data) {
-                            $('#mainContents').html(data);
-                            $('#spinnerLoading').hide();
-                        });
-                    }
-                    else if(obj.status === 'failed'){
-                        toastr["error"](obj.message, "Failed:");
-                        $('#spinnerLoading').hide();
-                    }
-                    else{
-                        toastr["error"]("Something wrong when edit", "Failed:");
-                        $('#spinnerLoading').hide();
-                    }
-                });
-            }
-            else if($('#editModal').hasClass('show')){
+            if($('#editModal').hasClass('show')){
                 //$('#spinnerLoading').show();
                 var editId = $('#editModal').find('#editId').val();
                 var editPrice = $('#editModal').find('#editPrice').val();
                 var editWeight = $('#editModal').find('#editWeight').val();
+                debugger;
                 var totalPrice = parseFloat(parseFloat(editPrice) * parseFloat(editPrice)).toFixed(2);
+                var subTotalPrice = parseFloat($('#subTotalPricing').val());
+                subTotalPrice = parseFloat(parseFloat(subTotalPrice) + parseFloat(totalPrice)).toFixed(2);
+                var totalDiscount = parseFloat($('#totalDiscount').val());
+                var totalPricing = parseFloat(parseFloat(subTotalPrice) - parseFloat(totalDiscount)).toFixed(2);
 
                 var $addContents = $("#addContents").clone();
                 $("#TableId").append($addContents.html());
@@ -302,6 +307,30 @@ $(function () {
                 size++;
                 $('#editModal').modal('hide');
                 //$('#spinnerLoading').hide();
+                $('#subTotalPricing').val(subTotalPrice);
+                $('#totalPricing').val(totalPricing);
+            }
+            else{
+                $.post('php/receive.php', $('#saleForm').serialize(), function(data){
+                    var obj = JSON.parse(data); 
+                    
+                    if(obj.status === 'success'){
+                        toastr["success"](obj.message, "Success:");
+                        
+                        $.get('sales.php', function(data) {
+                            $('#mainContents').html(data);
+                            $('#spinnerLoading').hide();
+                        });
+                    }
+                    else if(obj.status === 'failed'){
+                        toastr["error"](obj.message, "Failed:");
+                        $('#spinnerLoading').hide();
+                    }
+                    else{
+                        toastr["error"]("Something wrong when submit", "Failed:");
+                        $('#spinnerLoading').hide();
+                    }
+                });
             }
         }
     });
@@ -638,6 +667,12 @@ $(function () {
             else{
                 toastr["error"]("Failed to get the reading!", "Failed:");
             }
+        });
+    });
+
+    $('#cancelSales').on('click', function(){
+        $.get('sales.php', function(data) {
+            $('#mainContents').html(data);
         });
     });
 });
