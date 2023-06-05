@@ -57,7 +57,7 @@ else{
 <div class="modal fade" id="gradeModal">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
-        <form role="form" id="gradeForm">
+        <form role="form" id="gradeForm" method="post" action="php/grades.php" enctype="multipart/form-data">
             <div class="modal-header">
               <h4 class="modal-title">Add Products 新增产品</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -71,7 +71,10 @@ else{
                 </div>
                 <div class="form-group">
                     <label for="fileToUpload">Image</label>
-                    <input type="file" name="image-upload" id="image-upload" />
+                    <div id="image-preview">
+                        <label for="image-upload" id="image-label">Choose Image</label>
+                        <input type="file" name="image-upload" id="image-upload" />
+                    </div>
                 </div>
                 <div class="form-group">
                   <label for="market">Product Name 产品名称 *</label>
@@ -122,28 +125,52 @@ $(function () {
             $('td', row).css('background-color', '#E6E6FA');
         },        
     });
+
+    $.uploadPreview({
+        input_field: "#image-upload",   // Default: .image-upload
+        preview_box: "#image-preview",  // Default: .image-preview
+        label_field: "#image-label",    // Default: .image-label
+        label_default: "Choose Image",   // Default: Choose File
+        label_selected: "Change Image",  // Default: Change File
+        no_label: false                 // Default: false
+    });
     
     $.validator.setDefaults({
         submitHandler: function () {
             $('#spinnerLoading').show();
-            $.post('php/grades.php', $('#gradeForm').serialize(), function(data){
-                var obj = JSON.parse(data); 
+
+            $.ajax({
+                type: "POST",
+                enctype: 'multipart/form-data',
+                url: "php/grades.php",
+                data: $('#gradeForm').serialize(),
+                processData: false,
+                contentType: false,
+                cache: false,
+                timeout: 60000,
+                success: function (data) {
+                    var obj = JSON.parse(data); 
                 
-                if(obj.status === 'success'){
-                    $('#gradeModal').modal('hide');
-                    toastr["success"](obj.message, "Success:");
-                    
-                    $.get('products.php', function(data) {
-                        $('#mainContents').html(data);
+                    if(obj.status === 'success'){
+                        $('#gradeModal').modal('hide');
+                        toastr["success"](obj.message, "Success:");
+                        
+                        $.get('products.php', function(data) {
+                            $('#mainContents').html(data);
+                            $('#spinnerLoading').hide();
+                        });
+                    }
+                    else if(obj.status === 'failed'){
+                        toastr["error"](obj.message, "Failed:");
                         $('#spinnerLoading').hide();
-                    });
-                }
-                else if(obj.status === 'failed'){
-                    toastr["error"](obj.message, "Failed:");
-                    $('#spinnerLoading').hide();
-                }
-                else{
-                    toastr["error"]("Something wrong when edit", "Failed:");
+                    }
+                    else{
+                        toastr["error"]("Something wrong when edit", "Failed:");
+                        $('#spinnerLoading').hide();
+                    }
+                },
+                error: function (e) {
+                    toastr["error"](e.responseText, "Failed:");
                     $('#spinnerLoading').hide();
                 }
             });
@@ -156,7 +183,7 @@ $(function () {
         $('#gradeModal').find('#grades').val("");
         $('#gradeModal').modal('show');
         
-        $('#gradeForm').validate({
+        /*$('#gradeForm').validate({
             errorElement: 'span',
             errorPlacement: function (error, element) {
                 error.addClass('invalid-feedback');
@@ -168,7 +195,7 @@ $(function () {
             unhighlight: function (element, errorClass, validClass) {
                 $(element).removeClass('is-invalid');
             }
-        });
+        });*/
     });
 });
 
@@ -183,7 +210,7 @@ function edit(id){
             $('#gradeModal').find('#grades').val(obj.message.grade);
             $('#gradeModal').modal('show');
             
-            $('#gradeForm').validate({
+            /*$('#gradeForm').validate({
                 errorElement: 'span',
                 errorPlacement: function (error, element) {
                     error.addClass('invalid-feedback');
@@ -195,7 +222,7 @@ function edit(id){
                 unhighlight: function (element, errorClass, validClass) {
                     $(element).removeClass('is-invalid');
                 }
-            });
+            });*/
         }
         else if(obj.status === 'failed'){
             toastr["error"](obj.message, "Failed:");

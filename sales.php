@@ -79,8 +79,8 @@ else{
                                 <div class="card-header">
                                     <label><?=$rowProducts['item_name'] ?> </label>
                                 </div>
-                                <div class="card-body">
-                                    <img src="assets/durian.jpeg" width="100%"/>
+                                <!--div class="card-body">
+                                    <img src="assets/<?=$rowProducts['img'] ?>" width="100%"/>
                                 </div><!-- /.card-body -->
                             </div><!-- /.card -->
                         </div>
@@ -324,7 +324,6 @@ $(function () {
                 $('#totalPricing').val(totalPricing);
             }
             else{
-                debugger;
                 $.post('php/receive.php', $('#saleForm').serialize(), function(data){
                     var obj = JSON.parse(data); 
                     

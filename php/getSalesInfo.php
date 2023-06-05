@@ -6,7 +6,7 @@ session_start();
 if(isset($_POST['userID'])){
     $id = filter_input(INPUT_POST, 'userID', FILTER_SANITIZE_STRING);
 
-    if ($update_stmt = $db->prepare("SELECT * FROM purchase WHERE id=?")) {
+    if ($update_stmt = $db->prepare("SELECT * FROM sales WHERE id=?")) {
         $update_stmt->bind_param('s', $id);
 
         // Execute the prepared query.
@@ -23,11 +23,14 @@ if(isset($_POST['userID'])){
             
             if ($row = $result->fetch_assoc()) {
                 $message['id'] = $row['id'];
-                $message['batch_no'] = $row['batch_no'];
+                $message['receipt_no'] = $row['receipt_no'];
+                $message['sub_total'] = $row['sub_total'];
+                $message['discount'] = $row['discount'];
                 $message['total_price'] = $row['total_price'];
+                $message['payment_method'] = $row['payment_method'];
                 $message['carts'] = array();
 
-                if ($update_stmt2 = $db->prepare("SELECT * FROM purchase_cart WHERE purchase_id=?")) {
+                if ($update_stmt2 = $db->prepare("SELECT * FROM sales_cart WHERE sales_id=?")) {
                     $update_stmt2->bind_param('s', $id);
 
                     if (! $update_stmt2->execute()) {
@@ -43,9 +46,9 @@ if(isset($_POST['userID'])){
                         while ($row2 = $result2->fetch_assoc()) {
                             $message2 = array();
                             $message2['id'] = $row2['id'];
-                            $message2['purchasing_weight'] = $row2['purchasing_weight'];
-                            $message2['purchasing_price'] = $row2['purchasing_price'];
-                            $message2['purchasing_item'] = $row2['purchasing_item'];
+                            $message2['sales_weight'] = $row2['sales_weight'];
+                            $message2['sales_price'] = $row2['sales_price'];
+                            $message2['sales_item'] = $row2['sales_item'];
 
                             array_push($message['carts'], $message2);
                         }

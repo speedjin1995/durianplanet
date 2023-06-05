@@ -63,29 +63,21 @@ if(isset($_POST['code'], $_POST['grades'])){
         }
     }
 
-    /*if($_POST['id'] != null && $_POST['id'] != ''){
+    if($_POST['id'] != null && $_POST['id'] != ''){
         if ($update_stmt = $db->prepare("UPDATE items SET item_name=?, item_price=? WHERE id=?")) {
             $update_stmt->bind_param('sss', $code, $grades, $_POST['id']);
             
             // Execute the prepared query.
             if (! $update_stmt->execute()) {
-                echo json_encode(
-                    array(
-                        "status"=> "failed", 
-                        "message"=> $update_stmt->error
-                    )
-                );
+                echo '<script type="text/javascript">alert("'.$update_stmt->error.'");';
+                echo 'location.href = "../index.php";</script>';
             }
             else{
                 $update_stmt->close();
                 $db->close();
-                
-                echo json_encode(
-                    array(
-                        "status"=> "success", 
-                        "message"=> "Updated Successfully!!" 
-                    )
-                );
+
+                echo '<script type="text/javascript">alert("Updated Successfully!!");';
+                echo 'location.href = "../index.php";</script>';
             }
         }
     }
@@ -95,33 +87,21 @@ if(isset($_POST['code'], $_POST['grades'])){
             
             // Execute the prepared query.
             if (! $insert_stmt->execute()) {
-                echo json_encode(
-                    array(
-                        "status"=> "failed", 
-                        "message"=> $insert_stmt->error
-                    )
-                );
+                echo '<script type="text/javascript">alert("'.$insert_stmt->error.'");';
+                echo 'location.href = "../index.php";</script>';
             }
             else{
                 $insert_stmt->close();
                 $db->close();
-                
-                echo json_encode(
-                    array(
-                        "status"=> "success", 
-                        "message"=> "Added Successfully!!" 
-                    )
-                );
+
+                echo '<script type="text/javascript">alert("Added Successfully!!");';
+                echo 'location.href = "../index.php";</script>';
             }
         }
-    }*/
+    }
 }
 else{
-    echo json_encode(
-        array(
-            "status"=> "failed", 
-            "message"=> "Please fill in all the fields"
-        )
-    );
+    echo '<script type="text/javascript">alert("Please fill in all the fields.");';
+    echo 'location.href = "../index.php";</script>';
 }
 ?>

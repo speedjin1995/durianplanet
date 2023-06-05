@@ -618,15 +618,6 @@ $(function () {
     "hideMethod": "fadeOut"
   }
 
-  $.uploadPreview({
-    input_field: "#image-upload",   // Default: .image-upload
-    preview_box: "#image-preview",  // Default: .image-preview
-    label_field: "#image-label",    // Default: .image-label
-    label_default: "Choose Image",   // Default: Choose File
-    label_selected: "Change Image",  // Default: Change File
-    no_label: false                 // Default: false
-  });
-
   $.post('http://127.0.0.1:5002/', $('#setupForm').serialize(), function(data){
     if(data == "false"){
       alert("Failed to connect to the weighing scale, please check you com port in port setup page");

@@ -22,6 +22,7 @@ else{
 }
 
 $products = $db->query("SELECT * FROM items WHERE item_status = '0'");
+$products2 = $db->query("SELECT * FROM items WHERE item_status = '0'");
 ?>
 
 <style>
@@ -63,6 +64,12 @@ $products = $db->query("SELECT * FROM items WHERE item_status = '0'");
     }
 </style>
 
+<select class="form-control" style="width: 100%;" id="editGradesHidden" style="display: none;">
+    <?php while($roweditGrades2=mysqli_fetch_assoc($products2)){ ?>
+        <option value="<?=$roweditGrades2['id'] ?>"><?=$roweditGrades2['item_name'] ?></option>
+    <?php } ?>
+</select>
+
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -92,7 +99,7 @@ $products = $db->query("SELECT * FROM items WHERE item_status = '0'");
                         </div>
                     </div>
 					<div class="card-body">
-                        <div class="row">
+                        <!--div class="row">
                             <div class="form-group col-4">
                                 <label>From Date 开始日期</label>
                                 <div class="input-group date" id="fromDatePicker" data-target-input="nearest">
@@ -114,7 +121,7 @@ $products = $db->query("SELECT * FROM items WHERE item_status = '0'");
                             <div class="form-group col-md-4 mt-32">
                                 <button class="btn btn-success" id="filterSearch"><i class="fas fa-search"></i> Filter 筛选</button> 
                             </div>                                            
-                        </div>                        
+                        </div-->                        
 						<table id="gradeTable" class="table table-bordered table-striped">
 							<thead>
 								<tr>
@@ -134,12 +141,58 @@ $products = $db->query("SELECT * FROM items WHERE item_status = '0'");
 </section><!-- /.content -->
 <input type="text" id="barcodeScan">
 
+<div class="modal fade" id="viewModal">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title" id="viewTitle"></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Item <br>产品</th>
+                        <th>Weight <br>重量</th>
+                        <th>Unit Price <br>单货价格</th>
+                        <th>Price <br>价格</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="TableId2">
+                </tbody>
+                <tfoot id="tableFoot2">
+                    <tr>
+                        <th colspan="2"></th>
+                        <th>Total Price 总价</th>
+                        <th>
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="totalPricing" id="totalPricing" step="0.01" placeholder="Enter Total Price" value="0.00" readonly>
+                            </div>
+                        </th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close 关闭</button>
+            <!--button type="submit" class="btn btn-primary" name="submit" id="submitLot">Submit 提交</button-->
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
 <div class="modal fade" id="gradesModal">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <form role="form" id="gradeForm">
             <div class="modal-header">
-              <h4 class="modal-title">Add Grades 新增品规</h4>
+              <h4 class="modal-title">Add Purchase 新增采购</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -227,6 +280,7 @@ var contentIndex = 0;
 var size = $("#TableId").find(".details").length
 
 $(function () {
+    $('#editGradesHidden').hide();
     //Date picker
     var oneWeek = new Date();
     oneWeek.setHours(0,0,0,0);
@@ -288,7 +342,8 @@ $(function () {
             { 
                 data: 'id',
                 render: function ( data, type, row ) {
-                    return '<div class="row"><div class="col-3"><button type="button" id="view'+data+'" onclick="view('+data+')" class="btn btn-warning btn-sm"><i class="fas fa-eye"></i></button></div><div class="col-3"><button type="button" id="edit'+data+'" onclick="edit('+data+')" class="btn btn-success btn-sm"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" id="deactivate'+data+'" onclick="deactivate('+data+')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></div></div>';
+                    //return '<div class="row"><div class="col-3"><button type="button" id="view'+data+'" onclick="view('+data+')" class="btn btn-warning btn-sm"><i class="fas fa-eye"></i></button></div><div class="col-3"><button type="button" id="edit'+data+'" onclick="edit('+data+')" class="btn btn-success btn-sm"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" id="deactivate'+data+'" onclick="deactivate('+data+')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></div></div>';
+                    return '<div class="row"><div class="col-3"><button type="button" id="view'+data+'" onclick="view('+data+')" class="btn btn-warning btn-sm"><i class="fas fa-eye"></i></button></div><div class="col-3"><button type="button" id="deactivate'+data+'" onclick="deactivate('+data+')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></div></div>';
                 }
             }
         ],
@@ -316,7 +371,7 @@ $(function () {
                             printWindow.close();
                         }, 1000);*/
                         
-                        $.get('wgrade.php', function(data) {
+                        $.get('purchase.php', function(data) {
                             $('#mainContents').html(data);
                             $('#spinnerLoading').hide();
                         });
@@ -451,6 +506,12 @@ $(function () {
         
     // Find and remove selected table rows
     $("#TableId").on('click', 'button[id^="remove"]', function () {
+        var index = $(this).parents('.details').attr('data-index');
+        var subprice = parseFloat($(this).parents('.details').find('input[name^="totalPrice"]').val());
+        var totalPricing = parseFloat($('#tableFoot').find('#totalPricing').val());
+        totalPricing = totalPricing - subprice;
+        $('#tableFoot').find('#totalPricing').val(parseFloat(totalPricing).toFixed(2));
+        $("#TableId").append('<input type="hidden" name="deleted[]" value="'+index+'"/>');
         $(this).parents('.details').remove();
     });
 
@@ -628,43 +689,22 @@ function view(id){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
-            $('#editGradesModal').find('#editId').val(obj.message.id);
-            $('#editGradesModal').find('#editParentId').val(obj.message.parent_no);
-            $('#editGradesModal').find('#editItemType').val(obj.message.itemType);
-            $('#editGradesModal').find('#editGrossWeight').val(obj.message.grossWeight);
-            $('#editGradesModal').find('#editLotNo').val(obj.message.lotNo);
-            $('#editGradesModal').find('#editBTrayWeight').val(obj.message.tray_weight);
-            $('#editGradesModal').find('#editBTrayNo').val(obj.message.bTrayNo);
-            $('#editGradesModal').find('#editNetWeight').val(obj.message.netWeight);
-            $('#editGradesModal').find('#editQty').val(obj.message.pieces);
-            $('#editGradesModal').find('#editGrade').val(obj.message.grade);
-            $('#editGradesModal').find('#editMoistureAfGrade').val(obj.message.moisture_after_grading);
-            $('#editGradesModal').find('#editRemark').val(obj.message.remark);
-            $('#editGradesModal').modal('show');
+            $('#TableId2').find('.details').remove();
+            $('#viewModal').find('#viewTitle').text(obj.message.batch_no);
+            $('#tableFoot2').find('#totalPricing').val(obj.message.total_price);
 
-            if(obj.message.itemType == 'T1'){
-                $('#editGradesModal').find("#editGrade").html($('#editGradesHidden').html());
+            for(var i=0; i<obj.message.carts.length; i++){
+                var purchasing_weight = obj.message.carts[i].purchasing_weight;
+                var purchasing_price = obj.message.carts[i].purchasing_price;
+                var itemPrice = parseFloat(parseFloat(purchasing_price)/parseFloat(purchasing_weight)).toFixed(2);
+                $('#editGradesHidden').val(obj.message.carts[i].purchasing_item);
+                var purchasing_item = $('#editGradesHidden').find(":selected").text();
+
+                var newRow = '<tr class="details"><td>'+purchasing_item+'</td><td>'+purchasing_weight+'</td><td>'+itemPrice+'</td><td>'+purchasing_price+'</td><td></td></tr>';
+                $("#TableId2").append(newRow);
             }
-            else if(obj.message.itemType == 'T3'){
-                $('#editGradesModal').find("#editGrade").html($('#editGrades2Hidden').html());
-            }
-            else if(obj.message.itemType == 'T4'){
-                $('#editGradesModal').find("#editGrade").html($('#editGrades3Hidden').html());
-            }
-            
-            $('#editGradeForm').validate({
-                errorElement: 'span',
-                errorPlacement: function (error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                },
-                highlight: function (element, errorClass, validClass) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function (element, errorClass, validClass) {
-                    $(element).removeClass('is-invalid');
-                }
-            });
+
+            $('#viewModal').modal('show');
         }
         else if(obj.status === 'failed'){
             toastr["error"](obj.message, "Failed:");
@@ -759,7 +799,7 @@ function deactivate(id){
         
         if(obj.status === 'success'){
             toastr["success"](obj.message, "Success:");
-            $.get('wgrade.php', function(data) {
+            $.get('purchase.php', function(data) {
                 $('#mainContents').html(data);
                 $('#spinnerLoading').hide();
             });

@@ -16,6 +16,8 @@ if(isset($_POST['items'], $_POST['itemWeight'], $_POST['itemPrice'], $_POST['tot
     $totalPricing = filter_input(INPUT_POST, 'totalPricing', FILTER_SANITIZE_STRING);
     $success = true;
     $today = date("Y-m-d 00:00:00");
+    $deleted = $_POST['deleted'];
+    $deleted = array_map('intval', $deleted);
 
     if($_POST['id'] != null && $_POST['id'] != ''){
         if ($update_stmt = $db->prepare("UPDATE weighing SET item_types=?, lot_no=?, tray_weight=?, tray_no=?, grading_net_weight=?, grade, pieces, grading_gross_weight, grading_net_weight, moisture_after_grading=? WHERE id=?")) {
@@ -110,7 +112,7 @@ if(isset($_POST['items'], $_POST['itemWeight'], $_POST['itemPrice'], $_POST['tot
                         $insert_stmt->close();
 
                         for($i=0; $i<sizeof($items); $i++){
-                            if($items[$i] != null){
+                            if($items[$i] != null && !in_array($i,$deleted)){
                                 if ($insert_stmt2 = $db->prepare("INSERT INTO purchase_cart (purchase_id, purchasing_weight, purchasing_price, purchasing_item) VALUES (?, ?, ?, ?)")) {
                                     $insert_stmt2->bind_param('ssss', $id, $itemWeight[$i], $totalPrice[$i], $items[$i]);
                                     

@@ -13,7 +13,7 @@ if(isset($_POST['userID'])){
 	$userId = $_SESSION['userID'];
 	$name = $_SESSION['name'];
 
-	if ($stmt2 = $db->prepare("UPDATE purchase SET status=? WHERE id=?")) {
+	if ($stmt2 = $db->prepare("UPDATE sales SET status=? WHERE id=?")) {
 		$stmt2->bind_param('ss', $del, $id);
 		
 		if($stmt2->execute()){
