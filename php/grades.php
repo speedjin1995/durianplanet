@@ -10,9 +10,11 @@ if(!isset($_SESSION['userID'])){
     echo 'window.location.href = "../login.html";</script>';
 }
 
-if(isset($_POST['code'], $_POST['grades'])){
+if(isset($_POST['code'], $_POST['grades'], $_POST['category'], $_POST['packing'])){
     $code = filter_input(INPUT_POST, 'code', FILTER_SANITIZE_STRING);
     $grades = filter_input(INPUT_POST, 'grades', FILTER_SANITIZE_STRING);
+    $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_STRING);
+    $packing = filter_input(INPUT_POST, 'packing', FILTER_SANITIZE_STRING);
     $path = $path.'products/';
     $filePath = 'products/';
     $uploadOk = 0;
@@ -25,15 +27,23 @@ if(isset($_POST['code'], $_POST['grades'])){
         // Verify file extension
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         if(!array_key_exists($ext, $allowed)){
-            echo '<script type="text/javascript">alert("Please select a valid file format.");';
-            echo 'location.href = "../index.php";</script>';
+            echo json_encode(
+                array(
+                    "status" => "failed",
+                    "message" => "Please select a valid file format."
+                )
+            );
         }
     
         // Verify file size - 5MB maximum
         $maxsize = 5 * 1024 * 1024;
         if($filesize > $maxsize){
-            echo '<script type="text/javascript">alert("File size is larger than the allowed limit.");';
-            echo 'location.href = "../index.php";</script>';
+            echo json_encode(
+                array(
+                    "status" => "failed",
+                    "message" => "File size is larger than the allowed limit."
+                )
+            );
         }
     
         // Verify MYME type of the file
@@ -43,8 +53,12 @@ if(isset($_POST['code'], $_POST['grades'])){
 
             // Check whether file exists before uploading it
             if(file_exists($path.$newfilename)){
-                echo '<script type="text/javascript">alert("'.$newfilename.' is already exists.");';
-                echo 'location.href = "../index.php";</script>';
+                echo json_encode(
+                    array(
+                        "status" => "failed",
+                        "message" => $newfilename." is already exists."
+                    )
+                );
             } 
             else{
                 if (move_uploaded_file($_FILES["image-upload"]["tmp_name"], $path.$newfilename)) {
@@ -52,56 +66,140 @@ if(isset($_POST['code'], $_POST['grades'])){
                     $uploadOk = 1;
                 } 
                 else {
-                    echo '<script type="text/javascript">alert("Sorry, there was an error uploading your file.");';
-                    echo 'location.href = "../index.php";</script>';
+                    echo json_encode(
+                        array(
+                            "status" => "failed",
+                            "message" => "Sorry, there was an error uploading your file."
+                        )
+                    );
                 }
             } 
         } 
         else{
-            echo '<script type="text/javascript">alert("Sorry, there was an error uploading your file.");';
-            echo 'location.href = "../index.php";</script>';
+            echo json_encode(
+                array(
+                    "status" => "failed",
+                    "message" => "Sorry, there was an error uploading your file."
+                )
+            );
         }
     }
 
     if($_POST['id'] != null && $_POST['id'] != ''){
-        if ($update_stmt = $db->prepare("UPDATE items SET item_name=?, item_price=? WHERE id=?")) {
-            $update_stmt->bind_param('sss', $code, $grades, $_POST['id']);
-            
-            // Execute the prepared query.
-            if (! $update_stmt->execute()) {
-                echo '<script type="text/javascript">alert("'.$update_stmt->error.'");';
-                echo 'location.href = "../index.php";</script>';
+        if($uploadOk == 1){
+            if ($update_stmt = $db->prepare("UPDATE items SET category=?, item_name=?, item_price=?, packing=?, img=? WHERE id=?")) {
+                $update_stmt->bind_param('ssssss', $category, $code, $grades, $packing, $path, $_POST['id']);
+                
+                // Execute the prepared query.
+                if (! $update_stmt->execute()) {
+                    echo json_encode(
+                        array(
+                            "status" => "failed",
+                            "message" => $update_stmt->error
+                        )
+                    );
+                }
+                else{
+                    $update_stmt->close();
+                    $db->close();
+    
+                    echo json_encode(
+                        array(
+                            "status" => "success",
+                            "message" => "Updated Successfully!!"
+                        )
+                    );
+                }
             }
-            else{
-                $update_stmt->close();
-                $db->close();
-
-                echo '<script type="text/javascript">alert("Updated Successfully!!");';
-                echo 'location.href = "../index.php";</script>';
+        }
+        else{
+            if ($update_stmt = $db->prepare("UPDATE items SET category=?, item_name=?, item_price=?, packing=? WHERE id=?")) {
+                $update_stmt->bind_param('sssss', $category, $code, $grades, $packing, $_POST['id']);
+                
+                // Execute the prepared query.
+                if (! $update_stmt->execute()) {
+                    echo json_encode(
+                        array(
+                            "status" => "failed",
+                            "message" => $update_stmt->error
+                        )
+                    );
+                }
+                else{
+                    $update_stmt->close();
+                    $db->close();
+    
+                    echo json_encode(
+                        array(
+                            "status" => "success",
+                            "message" => "Updated Successfully!!"
+                        )
+                    );
+                }
             }
         }
     }
     else{
-        if ($insert_stmt = $db->prepare("INSERT INTO items (item_name, item_price, img) VALUES (?, ?, ?)")) {
-            $insert_stmt->bind_param('sss', $code, $grades, $filePath);
-            
-            // Execute the prepared query.
-            if (! $insert_stmt->execute()) {
-                echo '<script type="text/javascript">alert("'.$insert_stmt->error.'");';
-                echo 'location.href = "../index.php";</script>';
+        if($uploadOk == 1){
+            if ($insert_stmt = $db->prepare("INSERT INTO items (category, item_name, item_price, packing, img) VALUES (?, ?, ?, ?, ?)")) {
+                $insert_stmt->bind_param('sssss', $category, $code, $grades, $packing, $filePath);
+                
+                // Execute the prepared query.
+                if (! $insert_stmt->execute()) {
+                    echo json_encode(
+                        array(
+                            "status" => "failed",
+                            "message" => $insert_stmt->error
+                        )
+                    );
+                }
+                else{
+                    $insert_stmt->close();
+                    $db->close();
+    
+                    echo json_encode(
+                        array(
+                            "status" => "success",
+                            "message" => "Added Successfully!!"
+                        )
+                    );
+                }
             }
-            else{
-                $insert_stmt->close();
-                $db->close();
-
-                echo '<script type="text/javascript">alert("Added Successfully!!");';
-                echo 'location.href = "../index.php";</script>';
+        }
+        else{
+            if ($insert_stmt = $db->prepare("INSERT INTO items (category, item_name, item_price, packing) VALUES (?, ?, ?, ?)")) {
+                $insert_stmt->bind_param('ssss', $category, $code, $grades, $packing);
+                
+                // Execute the prepared query.
+                if (! $insert_stmt->execute()) {
+                    echo json_encode(
+                        array(
+                            "status" => "failed",
+                            "message" => $insert_stmt->error
+                        )
+                    );
+                }
+                else{
+                    $insert_stmt->close();
+                    $db->close();
+    
+                    echo json_encode(
+                        array(
+                            "status" => "success",
+                            "message" => "Added Successfully!!"
+                        )
+                    );
+                }
             }
         }
     }
 }
 else{
-    echo '<script type="text/javascript">alert("Please fill in all the fields.");';
-    echo 'location.href = "../index.php";</script>';
+    echo json_encode(
+        array(
+            "status" => "failed",
+            "message" => "Please fill in all the fields."
+        )
+    );
 }
 ?>

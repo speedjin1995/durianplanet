@@ -6,7 +6,7 @@ session_start();
 if(isset($_POST['userID'])){
 	$id = filter_input(INPUT_POST, 'userID', FILTER_SANITIZE_STRING);
 
-    if ($update_stmt = $db->prepare("SELECT * FROM items WHERE id=?")) {
+    if ($update_stmt = $db->prepare("SELECT * FROM category WHERE id=?")) {
         $update_stmt->bind_param('s', $id);
         
         // Execute the prepared query.
@@ -23,17 +23,14 @@ if(isset($_POST['userID'])){
             
             while ($row = $result->fetch_assoc()) {
                 $message['id'] = $row['id'];
-                $message['class'] = $row['item_name'];
-                $message['grade'] = $row['item_price'];
                 $message['category'] = $row['category'];
-                $message['packing'] = $row['packing'];
             }
             
             echo json_encode(
                 array(
                     "status" => "success",
                     "message" => $message
-                ));
+                ));   
         }
     }
 }

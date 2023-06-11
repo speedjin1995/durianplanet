@@ -9,6 +9,8 @@ if(!isset($_SESSION['userID'])){
 }
 else{
   $user = $_SESSION['userID'];
+  $category = $db->query("SELECT * FROM category WHERE item_status = '0'");
+  $packing = $db->query("SELECT * FROM packing WHERE item_status = '0'");
 }
 ?>
 <div class="content-header">
@@ -79,6 +81,24 @@ else{
                 <div class="form-group">
                   <label for="market">Product Name 产品名称 *</label>
                   <input type="text" class="form-control" name="code" id="code" placeholder="Enter Product Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="market">Product Category 产品类别 *</label>
+                    <select class="form-control" style="width: 100%;" id="category" name="category" required>
+                        <option value="" selected disabled hidden>Please Select</option>
+                        <?php while($rowProducts2=mysqli_fetch_assoc($category)){ ?>
+                            <option value="<?=$rowProducts2['id'] ?>"><?=$rowProducts2['category'] ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="market">Packing/UOM 包装 *</label>
+                    <select class="form-control" style="width: 100%;" id="packing" name="packing" required>
+                        <option value="" selected disabled hidden>Please Select</option>
+                        <?php while($rowProducts=mysqli_fetch_assoc($packing)){ ?>
+                            <option value="<?=$rowProducts['id'] ?>"><?=$rowProducts['packing_name'] ?></option>
+                        <?php } ?>
+                    </select>
                 </div>
                 <div class="form-group">
                   <label for="grades">Product Price 产品价格 *</label>
@@ -181,9 +201,11 @@ $(function () {
         $('#gradeModal').find('#id').val("");
         $('#gradeModal').find('#code').val("");
         $('#gradeModal').find('#grades').val("");
+        $('#gradeModal').find('#category').val("");
+        $('#gradeModal').find('#packing').val("");
         $('#gradeModal').modal('show');
         
-        /*$('#gradeForm').validate({
+        $('#gradeForm').validate({
             errorElement: 'span',
             errorPlacement: function (error, element) {
                 error.addClass('invalid-feedback');
@@ -195,7 +217,7 @@ $(function () {
             unhighlight: function (element, errorClass, validClass) {
                 $(element).removeClass('is-invalid');
             }
-        });*/
+        });
     });
 });
 
@@ -208,9 +230,11 @@ function edit(id){
             $('#gradeModal').find('#id').val(obj.message.id);
             $('#gradeModal').find('#code').val(obj.message.class);
             $('#gradeModal').find('#grades').val(obj.message.grade);
+            $('#gradeModal').find('#category').val(obj.message.category);
+            $('#gradeModal').find('#packing').val(obj.message.packing);
             $('#gradeModal').modal('show');
             
-            /*$('#gradeForm').validate({
+            $('#gradeForm').validate({
                 errorElement: 'span',
                 errorPlacement: function (error, element) {
                     error.addClass('invalid-feedback');
@@ -222,7 +246,7 @@ function edit(id){
                 unhighlight: function (element, errorClass, validClass) {
                     $(element).removeClass('is-invalid');
                 }
-            });*/
+            });
         }
         else if(obj.status === 'failed'){
             toastr["error"](obj.message, "Failed:");

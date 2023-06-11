@@ -44,7 +44,7 @@ else{
     <div class="container-fluid">
         <div class="row mb-2">
 			<div class="col-sm-6">
-				<h1 class="m-0 text-dark">Moisturise/Drying 风干/加湿</h1>
+				<h1 class="m-0 text-dark">Inventory 库存</h1>
 			</div><!-- /.col -->
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -57,12 +57,12 @@ else{
         <div class="row">
 			<div class="col-12">
 				<div class="card">
-					<div class="card-header">
+					<!--div class="card-header">
                         <div class="row">
                             <div class="col-6"></div>
-                            <!--div class="col-3">
+                            <div class="col-3">
                                 <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="excelSearch"><i class="fas fa-file-excel"></i>Export Excel</button>
-                            </div-->
+                            </di>
                             <div class="col-3">
                                 <button type="button" class="btn btn-block bg-gradient-info btn-sm" id="scanMoistures">Scan 扫描</button>
                             </div>
@@ -70,9 +70,9 @@ else{
                                 <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addMoistures">Add Moisturise/Drying 新增风干/加湿</button>
                             </div>
                         </div>
-                    </div>
+                    </div-->
 					<div class="card-body">
-                        <div class="row">
+                        <!--div class="row">
                             <div class="form-group col-3">
                                 <label>From Date 开始日期</label>
                                 <div class="input-group date" id="fromDatePicker" data-target-input="nearest">
@@ -106,23 +106,48 @@ else{
                             <div class="form-group col-md-3 mt-32">
                                 <button class="btn btn-success" id="filterSearch"><i class="fas fa-search"></i> Filter 筛选</button> 
                             </div>                                            
-                        </div>                         
+                        </div-->                         
 						<table id="moistureTable" class="table table-bordered table-striped">
 							<thead>
 								<tr>
 									<th>No. <br>排号</th>
-                                    <th>Lot No <br>批号</th>
-									<th>Grade <br>等级</th>
-                                    <th>Box/Tray No <br>桶/托盘代号</th>
-                                    <th>Box/Tray Weight <br>桶/托盘重量(G)</th>
-                                    <th>Grading Gross Weight <br>分级毛重(G)</th>
-                                    <th>Qty <br>片数(PCS)</th>
-                                    <th>Grading Net Weight <br>分级净重(G)</th>
-                                    <th>Moisture after moisturing <br>分级后湿度(%)</th> 
-                                    <th>Updated Datetime <br>更新时间</th>
-                                    <th>Action <br>行动</th>
+                                    <th>Items <br>货品</th>
+									<th>Quantity <br>数量</th>
+                                    <!--th>Action <br>行动</th-->
 								</tr>
 							</thead>
+                            <tbody>
+                                <tr>
+									<td>1</td>
+                                    <td>Musang King (Biji)</td>
+									<td>22 kg</td>
+								</tr>
+                                <tr>
+									<td>2</td>
+                                    <td>Musang King (Boxed)</td>
+									<td>4</td>
+								</tr>
+                                <tr>
+									<td>3</td>
+                                    <td>Red Prawn</td>
+									<td>5 kg</td>
+								</tr>
+                                <tr>
+									<td>4</td>
+                                    <td>Hor Lor (Biji)</td>
+									<td>12 kg</td>
+								</tr>
+                                <tr>
+									<td>5</td>
+                                    <td>Kulit Hijau</td>
+									<td>14 kg</td>
+								</tr>
+                                <tr>
+									<td>6</td>
+                                    <td>Red Prawn (Boxes)</td>
+									<td>3</td>
+								</tr>
+                            </tbody>
 						</table>
 					</div><!-- /.card-body -->
 				</div><!-- /.card -->
@@ -271,7 +296,7 @@ $(function () {
             }
     ?>
 
-    $("#moistureTable").DataTable({
+    /*$("#moistureTable").DataTable({
         "responsive": true,
         "autoWidth": false,
         'processing': true,
@@ -305,7 +330,7 @@ $(function () {
         "rowCallback": function( row, data, index ) {
             $('td', row).css('background-color', '#E6E6FA');
         },        
-    });
+    });*/
     
     $.validator.setDefaults({
         submitHandler: function () {

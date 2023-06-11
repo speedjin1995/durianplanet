@@ -440,8 +440,14 @@ to get the desired effect
                     </a>
                   </li>
                   <li class="nav-item">
+                    <a href="#category" data-file="category.php" class="nav-link link">
+                      <i class="nav-icon fas fa-list-alt"></i>
+                      <p>Category 类别</p>
+                    </a>
+                  </li>  
+                  <li class="nav-item">
                     <a href="#products" data-file="products.php" class="nav-link link">
-                      <i class="nav-icon fas fa-weight"></i>
+                      <i class="nav-icon fas fa-inventory"></i>
                       <p>Products 产品</p>
                     </a>
                   </li>            
@@ -515,7 +521,7 @@ to get the desired effect
 
   <!-- Main Footer -->
   <footer class="main-footer">
-    <strong>Copyright &copy; 2022 <a href="#">Tian Ma Birdnest</a>.</strong>All rights reserved.<div class="float-right d-none d-sm-inline-block"><b>Version</b> 1.0.0 </div>
+    <strong>Copyright &copy; 2023 <a href="#">Durian Planet Store</a>.</strong>All rights reserved.<div class="float-right d-none d-sm-inline-block"><b>Version</b> 1.0.0 </div>
   </footer>
 </div>
 <div class="modal fade" id="setupModal">

@@ -14,13 +14,32 @@ else{
     $stmt->execute();
     $result = $stmt->get_result();
     $role = 'NORMAL';
+    $productGroup = array();
 	
     if(($row = $result->fetch_assoc()) !== null){
-     $role = $row['role_code'];
+        $role = $row['role_code'];
     }
 
-    $products = $db->query("SELECT * FROM items WHERE item_status = '0'");
+    $products = $db->query("SELECT items.id, items.item_name, category.category, items.img FROM items, category WHERE items.item_status = '0' AND items.category = category.id AND category.status = '0'");
     $products2 = $db->query("SELECT * FROM items WHERE item_status = '0'");
+
+    while($rowProducts=mysqli_fetch_assoc($products)){
+        if(!in_array($rowProducts['category'], $productGroup)){
+            $message[] = array( 
+                'Category' => $rowProducts['category'],
+                'Products' => array()
+            );
+
+            array_push($productGroup, $rowProducts['category']);
+        }
+
+        $key = array_search($rowProducts['category'], $productGroup);
+        array_push($message[$key]['Products'], array(
+            'id' => $rowProducts['id'],
+            'item_name' => $rowProducts['item_name'],
+            'img' => $rowProducts['img']
+        ));
+    }
 }
 ?>
 
@@ -72,19 +91,59 @@ else{
 	<div class="container-fluid">
         <div class="row">
             <div class="col-7">
-                <div class="row">
-                    <?php while($rowProducts=mysqli_fetch_assoc($products)){ ?>
-                        <div class="col-3">
-                            <div class="card" id="items<?=$rowProducts['id'] ?>" onclick="addItems('<?=$rowProducts['id'] ?>')">
-                                <div class="card-header">
-                                    <label><?=$rowProducts['item_name'] ?> </label>
-                                </div>
-                                <!--div class="card-body">
-                                    <img src="assets/<?=$rowProducts['img'] ?>" width="100%"/>
-                                </div><!-- /.card-body -->
-                            </div><!-- /.card -->
-                        </div>
-                    <?php } ?>
+                <div class="card card-primary card-outline card-tabs">
+                    <div class="card-header p-0 pt-1 border-bottom-0">
+                        <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+                            <?php for($i=0; $i<count($productGroup); $i++){
+                                if($i==0){
+                                    echo '<li class="nav-item"><a class="nav-link active" id="'.$productGroup[$i].'" data-toggle="pill" href="#'.$productGroup[$i].'" role="tab" aria-controls="'.$productGroup[$i].'" aria-selected="true">'.$productGroup[$i].'</a></li>';
+                                }
+                                else{
+                                    echo '<li class="nav-item"><a class="nav-link" id="'.$productGroup[$i].'" data-toggle="pill" href="#'.$productGroup[$i].'" role="tab" aria-controls="'.$productGroup[$i].'" aria-selected="false">'.$productGroup[$i].'</a></li>';
+                                }
+                            } ?>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="custom-tabs-three-tabContent">
+                            <?php for($j=0; $j<count($message); $j++){
+                                if($j==0){
+                                    echo '<div class="tab-pane fade show active" id="'.$message[$j]['Category'].'" role="tabpanel" aria-labelledby="'.$message[$j]['Category'].'"><div class="row">';
+
+                                    for($k=0; $k<count($message[$j]['Products']); $k++){
+                                        echo '<div class="col-3"><div class="card" id="items'.$message[$j]['Products'][$k]['id'].'" onclick="addItems('.$message[$j]['Products'][$k]['id'].')">
+                                                <div class="card-header">
+                                                    <label>'.$message[$j]['Products'][$k]['item_name'].'</label>
+                                                </div>
+                                                <div class="card-body">
+                                                    <img src="assets/'.$message[$j]['Products'][$k]['img'].'" width="100%"/>
+                                                </div>
+                                            </div>
+                                        </div>';
+                                    }
+
+                                    echo '</div></div>';
+                                }
+                                else{
+                                    echo '<div class="tab-pane fade show" id="'.$message[$j]['Category'].'" role="tabpanel" aria-labelledby="'.$message[$j]['Category'].'"><div class="row">';
+
+                                    for($k=0; $k<count($message[$j]['Products']); $k++){
+                                        echo '<div class="col-3"><div class="card" id="items'.$message[$j]['Products'][$k]['id'].'" onclick="addItems('.$message[$j]['Products'][$k]['id'].')">
+                                                <div class="card-header">
+                                                    <label>'.$message[$j]['Products'][$k]['item_name'].'</label>
+                                                </div>
+                                                <div class="card-body">
+                                                    <img src="assets/'.$message[$j]['Products'][$k]['img'].'" width="100%"/>
+                                                </div>
+                                            </div>
+                                        </div>';
+                                    }
+
+                                    echo '</div></div>';
+                                }
+                            } ?>
+                        </div>   
+                    </div>
                 </div>
             </div>
 			<div class="col-5">
@@ -171,6 +230,8 @@ else{
             <div class="modal-body">
                 <div class="card-body">
                     <input type="hidden" class="form-control" name="editId" id="editId"/>
+                    <input type="hidden" class="form-control" name="packing" id="packing"/>
+
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
@@ -181,7 +242,7 @@ else{
 
                         <div class="col-12">
                             <div class="form-group">
-                                <label for="lotNo">Weight 重量 *</label>
+                                <label for="lotNo" id="weightLabel">Weight 重量 *</label>
                                 <input type="number" class="form-control" name="editWeight" id="editWeight" placeholder="Enter Weight">
                             </div>
                         </div>
@@ -297,6 +358,7 @@ $(function () {
             if($('#editModal').hasClass('show')){
                 //$('#spinnerLoading').show();
                 var editId = $('#editModal').find('#editId').val();
+                var packing = $('#editModal').find('#packing').val();
                 var editPrice = $('#editModal').find('#editPrice').val();
                 var editWeight = $('#editModal').find('#editWeight').val();
                 var totalPrice = parseFloat(parseFloat(editPrice) * parseFloat(editWeight)).toFixed(2);
@@ -427,7 +489,16 @@ function addItems(id){
         if(obj.status === 'success'){
             $('#editModal').find('#editId').val(obj.message.id);
             $('#editModal').find('#editPrice').val(obj.message.grade);
+            $('#editModal').find('#packing').val(obj.message.packing);
             $('#editModal').find('#editWeight').val("");
+
+            if(obj.message.packing == '1'){
+                $('#editModal').find('#weightLabel').text('Boxes 盒数 *');
+            }
+            else{
+                $('#editModal').find('#weightLabel').text('Weight 重量 *');
+            }
+
             $('#editModal').modal('show');
             
             $('#editForm').validate({
