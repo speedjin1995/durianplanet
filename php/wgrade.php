@@ -120,6 +120,19 @@ if(isset($_POST['items'], $_POST['itemWeight'], $_POST['itemPrice'], $_POST['tot
                                     if (! $insert_stmt2->execute()) {
                                         $success = false;
                                     }
+                                    else{
+                                        if ($insert_stmt3 = $db->prepare("INSERT INTO inventory (purchase_id, purchasing_weight, purchasing_price, purchasing_item) VALUES (?, ?, ?, ?)")) {
+                                            $insert_stmt3->bind_param('ssss', $id, $itemWeight[$i], $totalPrice[$i], $items[$i]);
+                                            
+                                            // Execute the prepared query.
+                                            if (! $insert_stmt3->execute()) {
+                                                $success = false;
+                                            }
+                                            else{
+                                                
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

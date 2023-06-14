@@ -419,6 +419,26 @@ to get the desired effect
               <p>Repacking 重新包装</p>
             </a>
           </li>
+          <!--li class="nav-item has-treeview menu-open">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Stock Out 出货<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" style="display: block;">
+              <li class="nav-item">
+                <a href="#stockout" data-file="stockout.php" class="nav-link link">
+                  <i class="nav-icon fa fa-dollar-sign"></i>
+                  <p>Stock Out 出货</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#salesreport" data-file="salesreport.php" class="nav-link link">
+                  <i class="nav-icon fas fa-file"></i>
+                  <p>Sales Report 销售报告</p>
+                </a>
+              </li>
+            </ul>
+          </li-->
           <?php 
             if($role == "ADMIN"){
               echo '<li class="nav-item">

@@ -154,15 +154,33 @@ if(isset($_POST['code'], $_POST['grades'], $_POST['category'], $_POST['packing']
                     );
                 }
                 else{
+                    $id = $insert_stmt->insert_id;;
                     $insert_stmt->close();
-                    $db->close();
-    
-                    echo json_encode(
-                        array(
-                            "status" => "success",
-                            "message" => "Added Successfully!!"
-                        )
-                    );
+                    $quantity = "0";
+
+                    if ($insert_stmt2 = $db->prepare("INSERT INTO inventory (item_id, quantity, packing) VALUES (?, ?, ?)")) {
+                        $insert_stmt2->bind_param('sss', $id, $quantity, $packing);
+
+                        if (! $insert_stmt2->execute()) {
+                            echo json_encode(
+                                array(
+                                    "status" => "failed",
+                                    "message" => $insert_stmt2->error
+                                )
+                            );
+                        }
+                        else{
+                            $insert_stmt2->close();
+                            $db->close();
+        
+                            echo json_encode(
+                                array(
+                                    "status" => "success",
+                                    "message" => "Added Successfully!!"
+                                )
+                            );
+                        }
+                    }
                 }
             }
         }
@@ -180,15 +198,33 @@ if(isset($_POST['code'], $_POST['grades'], $_POST['category'], $_POST['packing']
                     );
                 }
                 else{
+                    $id = $insert_stmt->insert_id;;
                     $insert_stmt->close();
-                    $db->close();
-    
-                    echo json_encode(
-                        array(
-                            "status" => "success",
-                            "message" => "Added Successfully!!"
-                        )
-                    );
+                    $quantity = "0";
+
+                    if ($insert_stmt2 = $db->prepare("INSERT INTO inventory (item_id, quantity, packing) VALUES (?, ?, ?)")) {
+                        $insert_stmt2->bind_param('sss', $id, $quantity, $packing);
+
+                        if (! $insert_stmt2->execute()) {
+                            echo json_encode(
+                                array(
+                                    "status" => "failed",
+                                    "message" => $insert_stmt2->error
+                                )
+                            );
+                        }
+                        else{
+                            $insert_stmt2->close();
+                            $db->close();
+        
+                            echo json_encode(
+                                array(
+                                    "status" => "success",
+                                    "message" => "Added Successfully!!"
+                                )
+                            );
+                        }
+                    }
                 }
             }
         }
