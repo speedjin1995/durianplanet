@@ -20,8 +20,14 @@ if(isset($_POST['paymentMethod'], $_POST['items'], $_POST['itemPrice'], $_POST['
     $totalPricing = filter_input(INPUT_POST, 'totalPricing', FILTER_SANITIZE_STRING);
     $success = true;
     $today = date("Y-m-d 00:00:00");
+    $deleted = array();
 
-    if($_POST['id'] != null && $_POST['id'] != ''){
+    if(isset($_POST['deleted']) && $_POST['deleted'] != null){
+        $deleted = $_POST['deleted'];
+        $deleted = array_map('intval', $deleted);
+    }
+
+    if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
         if ($update_stmt = $db->prepare("UPDATE weighing SET item_types=?, lot_no=?, tray_weight=?, tray_no=?, grading_net_weight=?, grade, pieces, grading_gross_weight, grading_net_weight, moisture_after_grading=? WHERE id=?")) {
             $update_stmt->bind_param('ssssssss', $itemType, $grossWeight, $lotNo, $bTrayWeight, $bTrayNo, $netWeight, $moistureValue, $_POST['id']);
             
@@ -114,13 +120,35 @@ if(isset($_POST['paymentMethod'], $_POST['items'], $_POST['itemPrice'], $_POST['
                         $insert_stmt->close();
 
                         for($i=0; $i<sizeof($items); $i++){
-                            if($items[$i] != null){
+                            if($items[$i] != null && !in_array($i,$deleted)){
                                 if ($insert_stmt2 = $db->prepare("INSERT INTO sales_cart (sales_id, sales_weight, sales_price, sales_item) VALUES (?, ?, ?, ?)")) {
                                     $insert_stmt2->bind_param('ssss', $id, $itemWeight[$i], $totalPrice[$i], $items[$i]);
                                     
                                     // Execute the prepared query.
                                     if (! $insert_stmt2->execute()) {
                                         $success = false;
+                                    }
+                                    else{
+                                        if ($select_stmt2 = $db->prepare("SELECT * FROM inventory WHERE item_id=?")) {
+                                            $select_stmt2->bind_param('s', $items[$i]);
+                                            
+                                            // Execute the prepared query.
+                                            if ($select_stmt2->execute()) {
+                                                $result2 = $select_stmt2->get_result();
+                                    
+                                                if ($row2 = $result2->fetch_assoc()) {
+                                                    $quantity2 = $row2['quantity'];
+                                                    $packing2 = $row2['packing'];
+                                                    $id2 = $row2['id'];
+                                                    $quantity2 = (float)$quantity2 - (float)$itemWeight[$i];
+                                    
+                                                    if ($update_stmt2 = $db->prepare("UPDATE inventory SET quantity=? WHERE id=?")) {
+                                                        $update_stmt2->bind_param('ss', $quantity2, $id2);
+                                                        $update_stmt2->execute();
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -130,14 +158,14 @@ if(isset($_POST['paymentMethod'], $_POST['items'], $_POST['itemPrice'], $_POST['
                             $insert_stmt2->close();
                             $db->close();
 
-                            /*echo json_encode(
+                            echo json_encode(
                                 array(
                                     "status"=> "success", 
                                     "message"=> "Added Successfully!!"
                                 )
-                            );*/
-                            echo '<script type="text/javascript">';
-		                    echo 'window.location.href = "../index.php";</script>';
+                            );
+                            //echo '<script type="text/javascript">';
+		                    //echo 'window.location.href = "../index.php";</script>';
                         }
                         else{
                             $insert_stmt2->close();

@@ -459,6 +459,7 @@ $(function () {
 
     // Find and remove selected table rows
     $("#TableId tbody").on('click', 'button[name^="delete"]', function () {
+        $("#TableId").append('<input type="hidden" name="deleted[]" value="'+index+'"/>');
         $(this).parents("tr").remove();
     });
 

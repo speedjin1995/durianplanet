@@ -16,6 +16,13 @@ if(isset($_POST['items'], $_POST['itemWeight'], $_POST['itemsRepack'], $_POST['p
     $success = true;
     $quantity = '0';
 
+    $deleted = array();
+
+    if(isset($_POST['deleted']) && $_POST['deleted'] != null){
+        $deleted = $_POST['deleted'];
+        $deleted = array_map('intval', $deleted);
+    }
+
     if ($select_stmt = $db->prepare("SELECT * FROM inventory WHERE item_id=?")) {
         $select_stmt->bind_param('s', $items);
         
@@ -37,35 +44,38 @@ if(isset($_POST['items'], $_POST['itemWeight'], $_POST['itemsRepack'], $_POST['p
     }
 
     for($i=0; $i<count($itemsRepack); $i++){
-        if ($select_stmt2 = $db->prepare("SELECT * FROM inventory WHERE item_id=?")) {
-            $select_stmt2->bind_param('s', $itemsRepack[$i]);
-            
-            // Execute the prepared query.
-            if ($select_stmt2->execute()) {
-                $result2 = $select_stmt2->get_result();
+        if($itemsRepack[$i] != null && !in_array($i,$deleted)){
+            if ($select_stmt2 = $db->prepare("SELECT * FROM inventory WHERE item_id=?")) {
+                $select_stmt2->bind_param('s', $itemsRepack[$i]);
+                
+                // Execute the prepared query.
+                if ($select_stmt2->execute()) {
+                    $result2 = $select_stmt2->get_result();
+        
+                    if ($row2 = $result2->fetch_assoc()) {
+                        $quantity2 = $row2['quantity'];
+                        $packing2 = $row2['packing'];
+                        $id2 = $row2['id'];
     
-                if ($row2 = $result2->fetch_assoc()) {
-                    $quantity2 = $row2['quantity'];
-                    $packing2 = $row2['packing'];
-                    $id2 = $row2['id'];
-
-                    if($packing2 == '2'){
-                        $quantity2 = (float)$quantity2 + (float)$itemWeight[$i];
-                    }
-                    else{
-                        $quantity2 = (int)$quantity2 + 1;
-                    }
-    
-                    if ($update_stmt2 = $db->prepare("UPDATE inventory SET quantity=? WHERE id=?")) {
-                        $update_stmt2->bind_param('ss', $quantity2, $id2);
-                        
-                        if(! $update_stmt2->execute()){
-                            $success = false;
+                        if($packing2 == '2'){
+                            $quantity2 = (float)$quantity2 + (float)$itemWeight[$i];
+                        }
+                        else{
+                            $quantity2 = (int)$quantity2 + 1;
+                        }
+        
+                        if ($update_stmt2 = $db->prepare("UPDATE inventory SET quantity=? WHERE id=?")) {
+                            $update_stmt2->bind_param('ss', $quantity2, $id2);
+                            
+                            if(! $update_stmt2->execute()){
+                                $success = false;
+                            }
                         }
                     }
                 }
             }
         }
+        
     }
 
     if($success){
