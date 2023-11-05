@@ -459,7 +459,6 @@ $(function () {
 
     // Find and remove selected table rows
     $("#TableId").on('click', 'button[id^="remove"]', function () {
-        debugger;
         var index = $(this).parents(".details").attr('data-index');
         var itemPrice = parseFloat($(this).parents(".details").find('input[id^="totalPrice"]').val());
         $("#TableId").append('<input type="hidden" name="deleted[]" value="'+index+'"/>');
