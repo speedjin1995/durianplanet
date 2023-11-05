@@ -96,10 +96,10 @@ else{
                         <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
                             <?php for($i=0; $i<count($productGroup); $i++){
                                 if($i==0){
-                                    echo '<li class="nav-item"><a class="nav-link active" id="'.$productGroup[$i].'" data-toggle="pill" href="#'.$productGroup[$i].'" role="tab" aria-controls="'.$productGroup[$i].'" aria-selected="true">'.$productGroup[$i].'</a></li>';
+                                    echo '<li class="nav-item"><a class="nav-link active" id="'.$productGroup[$i].'" data-toggle="pill" href="#'.str_replace(' ', '_', $productGroup[$i]).'" role="tab" aria-controls="'.str_replace(' ', '_', $productGroup[$i]).'" aria-selected="true">'.$productGroup[$i].'</a></li>';
                                 }
                                 else{
-                                    echo '<li class="nav-item"><a class="nav-link" id="'.$productGroup[$i].'" data-toggle="pill" href="#'.$productGroup[$i].'" role="tab" aria-controls="'.$productGroup[$i].'" aria-selected="false">'.$productGroup[$i].'</a></li>';
+                                    echo '<li class="nav-item"><a class="nav-link" id="'.$productGroup[$i].'" data-toggle="pill" href="#'.str_replace(' ', '_', $productGroup[$i]).'" role="tab" aria-controls="'.str_replace(' ', '_', $productGroup[$i]).'" aria-selected="false">'.$productGroup[$i].'</a></li>';
                                 }
                             } ?>
                         </ul>
@@ -108,7 +108,7 @@ else{
                         <div class="tab-content" id="custom-tabs-three-tabContent">
                             <?php for($j=0; $j<count($message); $j++){
                                 if($j==0){
-                                    echo '<div class="tab-pane fade show active" id="'.$message[$j]['Category'].'" role="tabpanel" aria-labelledby="'.$message[$j]['Category'].'"><div class="row">';
+                                    echo '<div class="tab-pane fade show active" id="'.str_replace(' ', '_', $message[$j]['Category']).'" role="tabpanel" aria-labelledby="'.str_replace(' ', '_', $message[$j]['Category']).'"><div class="row">';
 
                                     for($k=0; $k<count($message[$j]['Products']); $k++){
                                         echo '<div class="col-3"><div class="card" id="items'.$message[$j]['Products'][$k]['id'].'" onclick="addItems('.$message[$j]['Products'][$k]['id'].')">
@@ -125,7 +125,7 @@ else{
                                     echo '</div></div>';
                                 }
                                 else{
-                                    echo '<div class="tab-pane fade show" id="'.$message[$j]['Category'].'" role="tabpanel" aria-labelledby="'.$message[$j]['Category'].'"><div class="row">';
+                                    echo '<div class="tab-pane fade" id="'.str_replace(' ', '_', $message[$j]['Category']).'" role="tabpanel" aria-labelledby="'.str_replace(' ', '_', $message[$j]['Category']).'"><div class="row">';
 
                                     for($k=0; $k<count($message[$j]['Products']); $k++){
                                         echo '<div class="col-3"><div class="card" id="items'.$message[$j]['Products'][$k]['id'].'" onclick="addItems('.$message[$j]['Products'][$k]['id'].')">
@@ -142,7 +142,7 @@ else{
                                     echo '</div></div>';
                                 }
                             } ?>
-                        </div>   
+                        </div>
                     </div>
                 </div>
             </div>
@@ -458,9 +458,33 @@ $(function () {
     });
 
     // Find and remove selected table rows
-    $("#TableId tbody").on('click', 'button[name^="delete"]', function () {
+    $("#TableId").on('click', 'button[id^="remove"]', function () {
+        debugger;
+        var index = $(this).parents(".details").attr('data-index');
+        var itemPrice = parseFloat($(this).parents(".details").find('input[id^="totalPrice"]').val());
         $("#TableId").append('<input type="hidden" name="deleted[]" value="'+index+'"/>');
-        $(this).parents("tr").remove();
+        $(this).parents(".details").remove();
+        var subTotalPrice = parseFloat($('#subTotalPricing').val());
+        subTotalPrice = parseFloat(parseFloat(subTotalPrice) - parseFloat(itemPrice)).toFixed(2);
+        var totalDiscount = parseFloat($('#totalDiscount').val());
+        var totalPricing = parseFloat(parseFloat(subTotalPrice) - parseFloat(totalDiscount)).toFixed(2);
+        
+        
+        if(subTotalPrice <= 0){
+            $('#subTotalPricing').val(0.00);
+        }
+        else{
+            $('#subTotalPricing').val(subTotalPrice);
+        }
+
+        if(totalPricing <= 0){
+            $('#totalPricing').val(0.00);
+        }
+        else{
+            $('#totalPricing').val(totalPricing);
+        }
+        
+        
     });
 
     $('#cancelSales').on('click', function(){
